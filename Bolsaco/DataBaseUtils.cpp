@@ -1,4 +1,4 @@
-#include "DatabaseUtils.h"
+#include "DataBaseUtils.h"
 
 #include <iostream>
 
@@ -76,50 +76,111 @@ const char* DataBaseUtils::TiposMaquinasFields::TIPO = "Tipo";
 
 const std::string createBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::BOBINAS) +
                                      "(" +
-                                     std::string(DataBaseUtils::BobinasFields::ID)     + " int    NOT NULL ," +
-                                     std::string(DataBaseUtils::BobinasFields::MEDIDA) + " string NOT NULL ," +
-                                     std::string(DataBaseUtils::BobinasFields::PESO)   + " float  NOT NULL ," +
+                                     std::string(DataBaseUtils::BobinasFields::ID)     + " int    NOT NULL," +
+                                     std::string(DataBaseUtils::BobinasFields::MEDIDA) + " string NOT NULL," +
+                                     std::string(DataBaseUtils::BobinasFields::PESO)   + " float  NOT NULL," +
                                      "PRIMARY KEY (" + std::string(DataBaseUtils::BobinasFields::ID) + ")" +
                                      ");";
 const char* DataBaseUtils::CreationCommands::createBobinas = createBobinasStr.c_str();
 
 const std::string createMaquinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::MAQUINAS) +
-                                      " (" +
-                                      std::string(DataBaseUtils::MaquinasFields::ID)          + " int    NOT NULL ," +
-                                      std::string(DataBaseUtils::MaquinasFields::DESCRIPCION) + " string          ," +
-                                      std::string(DataBaseUtils::MaquinasFields::TIPO)        + " int    NOT NULL ," +
+                                      "(" +
+                                      std::string(DataBaseUtils::MaquinasFields::DESCRIPCION) + " string         ," +
+                                      std::string(DataBaseUtils::MaquinasFields::ID)          + " int    NOT NULL," +
+                                      std::string(DataBaseUtils::MaquinasFields::TIPO)        + " int    NOT NULL," +
                                       "PRIMARY KEY (" + std::string(DataBaseUtils::MaquinasFields::ID) + ")" +
                                       ");";
 const char* DataBaseUtils::CreationCommands::createMaquinas = createMaquinasStr.c_str();
 
 const std::string createMedidasBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::MEDIDAS_BOBINAS) +
                                             "(" +
-                                            std::string(DataBaseUtils::MedidasBobinasFields::ID)          + " int    NOT NULL ," +
                                             std::string(DataBaseUtils::MedidasBobinasFields::DESCRIPCION) + " string NOT NULL," +
+                                            std::string(DataBaseUtils::MedidasBobinasFields::ID)          + " int    NOT NULL," +
                                             "PRIMARY KEY (" + std::string(DataBaseUtils::MedidasBobinasFields::ID) + ")" +
                                             ");";
 const char* DataBaseUtils::CreationCommands::createMedidasBobinas = createMedidasBobinasStr.c_str();
 
-const std::string createMedidasBolsasStr;
+const std::string createMedidasBolsasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::MEDIDAS_BOLSAS) +
+                                           "(" +
+                                           std::string(DataBaseUtils::MedidasBolsasFields::DESCRIPCION) + " string NOT NULL," +
+                                           std::string(DataBaseUtils::MedidasBolsasFields::ID)          + " int    NOT NULL," +
+                                           "PRIMARY KEY (" + std::string(DataBaseUtils::MedidasBolsasFields::ID) + ")" +
+                                           ");";
 const char* DataBaseUtils::CreationCommands::createMedidasBolsas = createMedidasBolsasStr.c_str();
 
-const std::string createOperariosStr;
+const std::string createOperariosStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::OPERARIOS) +
+                                       "(" +
+                                       std::string(DataBaseUtils::OperariosFields::ID)              + " int    NOT NULL," +
+                                       std::string(DataBaseUtils::OperariosFields::DNI)             + " int    NOT NULL," +
+                                       std::string(DataBaseUtils::OperariosFields::NOMBRE_COMPLETO) + " string NOT NULL," +
+                                       "PRIMARY KEY (" + std::string(DataBaseUtils::MedidasBolsasFields::ID) + ")" +
+                                       ");";
 const char* DataBaseUtils::CreationCommands::createOperarios = createOperariosStr.c_str();
 
-const std::string createTareasCortadoStr;
+const std::string createTareasCortadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_CORTADO) +
+                                           "(" +
+                                           std::string(DataBaseUtils::TareaCortadoFields::CANTIDAD)        + " int  NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::FECHA)           + " date NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::ID)              + " int  NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::ID_BOBINA)       + " int  NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::ID_MAQUINA)      + " int  NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::ID_MEDIDA_BOLSA) + " int  NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::ID_OPERARIO)     + " int  NOT NULL," +
+                                           "PRIMARY KEY (" + std::string(DataBaseUtils::TareaCortadoFields::ID) + ")" +
+                                           ");";
 const char* DataBaseUtils::CreationCommands::createTareasCortado = createTareasCortadoStr.c_str();
 
-const std::string createTareasExtrusadoStr;
+const std::string createTareasExtrusadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_EXTRUSADO) +
+                                             "(" +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::FECHA)       + " date NOT NULL," +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::ID)          + " int  NOT NULL," +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::ID_BOBINA)   + " int  NOT NULL," +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::ID_MAQUINA)  + " int  NOT NULL," +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::ID_OPERARIO) + " int  NOT NULL," +
+                                             "PRIMARY KEY (" + std::string(DataBaseUtils::TareaExtrusadoFields::ID) + ")" +
+                                             ");";
 const char* DataBaseUtils::CreationCommands::createTareasExtrusado = createTareasExtrusadoStr.c_str();
 
-const std::string createTareasFiltradoStr;
+const std::string createTareasFiltradoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_FILTRADO) +
+                                            "(" +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::FECHA)       + " date NOT NULL," +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::ID)          + " int  NOT NULL," +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::ID_MAQUINA)  + " int  NOT NULL," +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::ID_OPERARIO) + " int  NOT NULL," +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::KILOS)       + " int  NOT NULL," +
+                                            "PRIMARY KEY (" + std::string(DataBaseUtils::TareaFiltradoFields::ID) + ")" +
+                                            ");";
 const char* DataBaseUtils::CreationCommands::createTareasFiltrado = createTareasFiltradoStr.c_str();
 
-const std::string createTareasLavadoStr;
+const std::string createTareasLavadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_LAVADO) +
+                                          "(" +
+                                          std::string(DataBaseUtils::TareaLavadoFields::FECHA)       + " date NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::ID)          + " int  NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::ID_MAQUINA)  + " int  NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::ID_OPERARIO) + " int  NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::KILOS)       + " int  NOT NULL," +
+                                          "PRIMARY KEY (" + std::string(DataBaseUtils::TareaLavadoFields::ID) + ")" +
+                                          ");";
 const char* DataBaseUtils::CreationCommands::createTareasLavado = createTareasLavadoStr.c_str();
 
-const std::string createTareasRebobinadoStr;
+const std::string createTareasRebobinadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_REBOBINADO) +
+                                              "(" +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::FECHA)       + " date NOT NULL," +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::ID)          + " int  NOT NULL," +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::ID_BOBINA)   + " int  NOT NULL," +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::ID_MAQUINA)  + " int  NOT NULL," +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::ID_OPERARIO) + " int  NOT NULL," +
+                                              "PRIMARY KEY (" + std::string(DataBaseUtils::TareaRebobinadoFields::ID) + ")" +
+                                              ");";
 const char* DataBaseUtils::CreationCommands::createTareasRebobinado = createTareasRebobinadoStr.c_str();
+
+const std::string createTiposMaquinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TIPOS_MAQUINAS) +
+                                           "(" +
+                                           std::string(DataBaseUtils::TiposMaquinasFields::ID)   + " int     NOT NULL," +
+                                           std::string(DataBaseUtils::TiposMaquinasFields::TIPO) + " string  NOT NULL," +
+                                           "PRIMARY KEY (" + std::string(DataBaseUtils::TiposMaquinasFields::ID) + ")" +
+                                           ");";
+const char* DataBaseUtils::CreationCommands::createTiposMaquinas = createTiposMaquinasStr.c_str();
 
 QString
 DataBaseUtils::buildSelectQuery(const QString& aTable, const QString& aColumn, const KeyAndValue& aCondition)
@@ -229,6 +290,14 @@ DataBaseUtils::internalSelect(const QString& aTable, const QString& aSelectQuery
         return Result<std::vector<DataBaseUtils::KeyAndValue>>(Status::FAILED, "La tabla no existe");
     }*/
     return returnData;
+}
+
+Result<void>
+DataBaseUtils::insert(const QString& aTable, const KeyAndValue& aToInsert)
+{
+    std::vector<KeyAndValue> vec;
+    vec.emplace_back(aToInsert);
+    return insert(aTable, vec);
 }
 
 Result<void>

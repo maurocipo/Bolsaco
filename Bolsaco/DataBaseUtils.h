@@ -116,31 +116,27 @@ namespace DataBaseUtils
         static const char* TIPO;
     };
 //------------------------------------------------------
-    enum MedidasBobinas
-    {
-        MEDIDA11,
-        MEDIDA22
+    struct Maquina {
+        Maquina(const int aTipo, const QString aDescripcion):
+            mTipo(aTipo),
+            mDescripcion(aDescripcion) {}
+
+        int mTipo;
+        QString mDescripcion;
     };
-    enum MedidasBolsas
-    {
-        MEDIDA1,
-        MEDIDA2,
-        MEDIDA3,
-        MEDIDA4,
-        MEDIDA5
-    };
-    enum TiposMaquinas
-    {
-        INVALID = -1,
-        CORTADORA,
-        EXTRUSORA,
-        FILTRADORA,
-        LAVADORA,
-        REBOBINADORA
+
+    struct Operario {
+        Operario(const QString& aNombreYApellido, const int aDNI):
+            mNombreYApellido(aNombreYApellido),
+            mDNI(aDNI) {}
+
+        QString mNombreYApellido;
+        int mDNI;
     };
 //------------------------------------------------------
     struct KeyAndValue
     {
+        KeyAndValue() {};
         KeyAndValue(const QString& aKey, const QString& aValue)
             : mKey(aKey), mValue(aValue) {}
 
@@ -164,6 +160,9 @@ namespace DataBaseUtils
     Result<std::vector<KeyAndValue>>
     internalSelect(const QString& aTable, const QString& aSelectQuery);
 
+
+    Result<void>
+    insert(const QString& aTable, const KeyAndValue& aToInsert);
     Result<void>
     insert(const QString& aTable, const std::vector<KeyAndValue>& aToInsert);
 

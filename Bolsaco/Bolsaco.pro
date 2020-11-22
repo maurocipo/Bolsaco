@@ -12,7 +12,7 @@ CONFIG += c++11
 SOURCES += \
     CargaTareas.cpp \
     Cortadora.cpp \
-    DatabaseUtils.cpp \
+    DataBaseUtils.cpp \
     Extrusora.cpp \
     Filtradora.cpp \
     InicioSesion.cpp \
@@ -26,7 +26,8 @@ SOURCES += \
 HEADERS += \
     CargaTareas.h \
     Cortadora.h \
-    DatabaseUtils.h \
+    DataBaseData.h \
+    DataBaseUtils.h \
     Extrusora.h \
     Filtradora.h \
     InicioSesion.h \

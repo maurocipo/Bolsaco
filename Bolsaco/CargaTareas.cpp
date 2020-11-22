@@ -1,6 +1,7 @@
 #include "CargaTareas.h"
 
-#include "DatabaseUtils.h"
+#include "DataBaseData.h"
+#include "DataBaseUtils.h"
 #include "Cortadora.h"
 #include "Extrusora.h"
 #include "Filtradora.h"
@@ -60,26 +61,25 @@ void CargaTareas::on_comboBox_numero_currentIndexChanged(int aMachineNumber)
 
 void CargaTareas::on_comboBox_tipoDeMaquina_currentIndexChanged(int aMachineIndex)
 {
-/*    mUi->comboBox_numero->clear();
+    mUi->comboBox_numero->clear();
 
     QStringList numeros = {};
     int currentIndex = -1;
-    if (aMachineIndex == DataBaseUtils::Maquinas::CORTADORA) {
-        numeros.append({"1", "2", "3", "4"});
-    } else if (aMachineIndex == DataBaseUtils::Maquinas::EXTRUSORA) {
-        numeros.append({"1", "2", "3", "4", "5", "6"});
-    } else if (aMachineIndex == DataBaseUtils::Maquinas::FILTRADORA) {
-        numeros.append({"1", "2"});
-    } else if (aMachineIndex == DataBaseUtils::Maquinas::LAVADORA) {
-        numeros.append("1");
+    const int cantidadMaquinas = sizeof(DataBaseData::CantidadMaquinas)/sizeof(DataBaseData::CantidadMaquinas[0]);
+    if (aMachineIndex > 0 && aMachineIndex < cantidadMaquinas) {
+        for (int i = 0; i < DataBaseData::CantidadMaquinas[aMachineIndex]; ++i) {
+            numeros.append(QString(i + 1));
+        }
+    }
+
+    if (aMachineIndex == DataBaseData::TiposMaquinas::LAVADORA) {
         currentIndex = 0;
-    } else if (aMachineIndex == DataBaseUtils::Maquinas::REBOBINADORA) {
-        numeros.append("1");
+    } else if (aMachineIndex == DataBaseData::TiposMaquinas::REBOBINADORA) {
         currentIndex = 0;
     }
     mUi->comboBox_numero->addItems(numeros);
     mUi->comboBox_numero->setCurrentIndex(currentIndex);
-*/}
+}
 
 void
 CargaTareas::hideMaquinas() const

@@ -10,7 +10,8 @@
 #include <iostream> // USED TO DEV. SHOULD BE GONE
 
 #include "CargaTareas.h"
-#include "DatabaseUtils.h"
+#include "DataBaseUtils.h"
+#include "DataBaseData.h"
 #include "InicioSesion.h"
 #include "NotificationSender.h"
 #include "SimpleCrypt.h"
@@ -74,7 +75,17 @@ MainWindow::setupDataBase()
     }
 
     // Check database health. Tables that should exist:
-
+    // DataBaseUtils::TableNames::BOBINAS
+    // DataBaseUtils::TableNames::MAQUINAS
+    // DataBaseUtils::TableNames::MEDIDAS_BOBINAS
+    // DataBaseUtils::TableNames::MEDIDAS_BOLSAS
+    // DataBaseUtils::TableNames::OPERARIOS
+    // DataBaseUtils::TableNames::TAREAS_CORTADO
+    // DataBaseUtils::TableNames::TAREAS_EXTRUSADO
+    // DataBaseUtils::TableNames::TAREAS_FILTRADO
+    // DataBaseUtils::TableNames::TAREAS_LAVADO
+    // DataBaseUtils::TableNames::TAREAS_REBOBINADO
+    // DataBaseUtils::TableNames::TIPOS_MAQUINAS
     QStringList tables = mDb.tables();
     if (tables.contains(TableNames::BOBINAS) == false) {
         QSqlQuery query(CreationCommands::createBobinas);
@@ -84,58 +95,113 @@ MainWindow::setupDataBase()
         }
     }
 
-    /*if (tables.contains(TableNames::MAQUINA) == false) {
-        QSqlQuery query(CreationCommands::createMaquina);
+    if (tables.contains(TableNames::MAQUINAS) == false) {
+        QSqlQuery query(CreationCommands::createMaquinas);
         if(query.isActive() == false) {
             ERROR(query.lastError().text().toStdString());
             throw;
         }
 
-        std::vector<KeyAndValue> maquina;
-        maquina.emplace_back(KeyAndValue(MaquinaFields::TIPO, "Extrusora"));
-        DataBaseUtils::insert(TableNames::MAQUINA, maquina);
-        maquina.clear();
-        maquina.emplace_back(KeyAndValue(MaquinaFields::TIPO, "Cortadora"));
-        DataBaseUtils::insert(TableNames::MAQUINA, maquina);
-        maquina.clear();
-        maquina.emplace_back(KeyAndValue(MaquinaFields::TIPO, "Filtradora"));
-        DataBaseUtils::insert(TableNames::MAQUINA, maquina);
-        maquina.clear();
-        maquina.emplace_back(KeyAndValue(MaquinaFields::TIPO, "Lavadora"));
-        DataBaseUtils::insert(TableNames::MAQUINA, maquina);
-        maquina.clear();
-        maquina.emplace_back(KeyAndValue(MaquinaFields::TIPO, "Rebobinadora"));
-        DataBaseUtils::insert(TableNames::MAQUINA, maquina);
-        maquina.clear();
+        for (size_t i = 0; i < DataBaseData::Maquinas.size(); ++i) {
+            std::vector<KeyAndValue> maquina;
+            maquina.emplace_back(KeyAndValue(MaquinasFields::DESCRIPCION, DataBaseData::Maquinas[i].mDescripcion));
+            maquina.emplace_back(KeyAndValue(MaquinasFields::TIPO, QString(DataBaseData::Maquinas[i].mTipo)));
+            DataBaseUtils::insert(TableNames::MAQUINAS, maquina);
+        }
     }
 
-    if (tables.contains(TableNames::OPERADOR) == false) {
-        QSqlQuery query(CreationCommands::createOperador);
+    if (tables.contains(TableNames::MEDIDAS_BOBINAS) == false) {
+        QSqlQuery query(CreationCommands::createMedidasBobinas);
         if(query.isActive() == false) {
             ERROR(query.lastError().text().toStdString());
             throw;
         }
 
-        std::vector<KeyAndValue> operador;
-        operador.emplace_back(KeyAndValue(OperadorFields::DNI, "34990189"));
-        operador.emplace_back(KeyAndValue(OperadorFields::APELLIDO, "Cipo"));
-        operador.emplace_back(KeyAndValue(OperadorFields::NOMBRE, "Mauro"));
-        DataBaseUtils::insert(TableNames::OPERADOR, operador);
-        operador.clear();
-        operador.emplace_back(KeyAndValue(OperadorFields::DNI, "35915762"));
-        operador.emplace_back(KeyAndValue(OperadorFields::APELLIDO, "Vacotto"));
-        operador.emplace_back(KeyAndValue(OperadorFields::NOMBRE, "Meli"));
-        DataBaseUtils::insert(TableNames::OPERADOR, operador);
-        operador.clear();
+        for (int i = 0; i < DataBaseData::MedidasBobinas.size(); ++i) {
+            KeyAndValue medida(MedidasBobinasFields::DESCRIPCION, DataBaseData::MedidasBobinas[i]);
+            DataBaseUtils::insert(TableNames::MEDIDAS_BOBINAS, medida);
+        }
     }
 
-    if (tables.contains(TableNames::TAREA) == false) {
-        QSqlQuery query(CreationCommands::createTarea);
+    if (tables.contains(TableNames::MEDIDAS_BOLSAS) == false) {
+        QSqlQuery query(CreationCommands::createMedidasBolsas);
         if(query.isActive() == false) {
             ERROR(query.lastError().text().toStdString());
             throw;
         }
-    }*/
+
+        for (int i = 0; i < DataBaseData::MedidasBolsas.size(); ++i) {
+            KeyAndValue medida(MedidasBobinasFields::DESCRIPCION, DataBaseData::MedidasBolsas[i]);
+            DataBaseUtils::insert(TableNames::MEDIDAS_BOLSAS, medida);
+        }
+    }
+
+    if (tables.contains(TableNames::OPERARIOS) == false) {
+        QSqlQuery query(CreationCommands::createOperarios);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+
+        for (size_t i = 0; i < DataBaseData::Operarios.size(); ++i) {
+            std::vector<KeyAndValue> operario;
+            operario.emplace_back(OperariosFields::DNI, QString(DataBaseData::Operarios[i].mDNI));
+            operario.emplace_back(OperariosFields::NOMBRE_COMPLETO, QString(DataBaseData::Operarios[i].mNombreYApellido));
+            DataBaseUtils::insert(TableNames::OPERARIOS, operario);
+        }
+    }
+
+    if (tables.contains(TableNames::TAREAS_CORTADO) == false) {
+        QSqlQuery query(CreationCommands::createTareasCortado);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+    }
+
+    if (tables.contains(TableNames::TAREAS_EXTRUSADO) == false) {
+        QSqlQuery query(CreationCommands::createTareasExtrusado);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+    }
+
+    if (tables.contains(TableNames::TAREAS_FILTRADO) == false) {
+        QSqlQuery query(CreationCommands::createTareasFiltrado);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+    }
+
+    if (tables.contains(TableNames::TAREAS_LAVADO) == false) {
+        QSqlQuery query(CreationCommands::createTareasLavado);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+    }
+
+    if (tables.contains(TableNames::TAREAS_REBOBINADO) == false) {
+        QSqlQuery query(CreationCommands::createTareasRebobinado);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+    }
+
+    if (tables.contains(TableNames::TIPOS_MAQUINAS) == false) {
+        QSqlQuery query(CreationCommands::createTiposMaquinas);
+        if(query.isActive() == false) {
+            ERROR(query.lastError().text().toStdString());
+            throw;
+        }
+
+        for (int i = 0; i < DataBaseData::TiposMaquinasStr.size(); ++i) {
+            DataBaseUtils::insert(TableNames::TIPOS_MAQUINAS, KeyAndValue(TiposMaquinasFields::TIPO, DataBaseData::TiposMaquinasStr[i]));
+        }
+    }
 
 }
 
