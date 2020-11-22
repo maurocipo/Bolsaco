@@ -37,7 +37,7 @@ namespace DataBaseUtils
         static const char* createTareasFiltrado;
         static const char* createTareasLavado;
         static const char* createTareasRebobinado;
-        static const char* createTiposMaquinas
+        static const char* createTiposMaquinas;
     };
 //------------------------------------------------------
     struct BobinasFields

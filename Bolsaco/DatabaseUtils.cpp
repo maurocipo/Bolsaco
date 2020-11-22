@@ -11,67 +11,67 @@
 
 const char* DataBaseUtils::TableNames::BOBINAS = "Bobinas";
 const char* DataBaseUtils::TableNames::MAQUINAS = "Maquinas";
-const char* DataBaseUtils::TableNames::MEDIDAS_BOBINAS = "Medidas Bobinas";
-const char* DataBaseUtils::TableNames::MEDIDAS_BOLSAS = "Medidas Bolsas";
+const char* DataBaseUtils::TableNames::MEDIDAS_BOBINAS = "Medidas_Bobinas";
+const char* DataBaseUtils::TableNames::MEDIDAS_BOLSAS = "Medidas_Bolsas";
 const char* DataBaseUtils::TableNames::OPERARIOS = "Operarios";
-const char* DataBaseUtils::TableNames::TAREAS_CORTADO = "Tareas Cortado";
-const char* DataBaseUtils::TableNames::TAREAS_EXTRUSADO = "Tareas Extrusado";
-const char* DataBaseUtils::TableNames::TAREAS_FILTRADO = "Tareas Filtrado";
-const char* DataBaseUtils::TableNames::TAREAS_LAVADO = "Tareas Lavado";
-const char* DataBaseUtils::TableNames::TAREAS_REBOBINADO = "Tareas Rebobinado";
-const char* DataBaseUtils::TableNames::TIPOS_MAQUINAS = "Tipos Maquinas";
+const char* DataBaseUtils::TableNames::TAREAS_CORTADO = "Tareas_Cortado";
+const char* DataBaseUtils::TableNames::TAREAS_EXTRUSADO = "Tareas_Extrusado";
+const char* DataBaseUtils::TableNames::TAREAS_FILTRADO = "Tareas_Filtrado";
+const char* DataBaseUtils::TableNames::TAREAS_LAVADO = "Tareas_Lavado";
+const char* DataBaseUtils::TableNames::TAREAS_REBOBINADO = "Tareas_Rebobinado";
+const char* DataBaseUtils::TableNames::TIPOS_MAQUINAS = "Tipos_Maquinas";
 
-const char* DataBaseUtils::BobinasFields::ID = "Id Bobina";
+const char* DataBaseUtils::BobinasFields::ID = "Id_Bobina";
 const char* DataBaseUtils::BobinasFields::MEDIDA = "Medida";
 const char* DataBaseUtils::BobinasFields::PESO = "Peso";
 
 const char* DataBaseUtils::MaquinasFields::DESCRIPCION = "Descripcion";
-const char* DataBaseUtils::MaquinasFields::ID = "Id Maquina";
+const char* DataBaseUtils::MaquinasFields::ID = "Id_Maquina";
 const char* DataBaseUtils::MaquinasFields::TIPO = DataBaseUtils::TiposMaquinasFields::ID;
 
 const char* DataBaseUtils::MedidasBobinasFields::DESCRIPCION = "Descripcion";
-const char* DataBaseUtils::MedidasBobinasFields::ID = "Id Medida Bobina";
+const char* DataBaseUtils::MedidasBobinasFields::ID = "Id_Medida_Bobina";
 
 const char* DataBaseUtils::MedidasBolsasFields::DESCRIPCION = "Descripcion";
-const char* DataBaseUtils::MedidasBolsasFields::ID = "Id Medida Bolsa";
+const char* DataBaseUtils::MedidasBolsasFields::ID = "Id_Medida_Bolsa";
 
 const char* DataBaseUtils::OperariosFields::DNI = "DNI";
-const char* DataBaseUtils::OperariosFields::ID = "Id Operario";
-const char* DataBaseUtils::OperariosFields::NOMBRE_COMPLETO = "Nombre Completo";
+const char* DataBaseUtils::OperariosFields::ID = "Id_Operario";
+const char* DataBaseUtils::OperariosFields::NOMBRE_COMPLETO = "Nombre_Completo";
 
 const char* DataBaseUtils::TareaCortadoFields::CANTIDAD = "Cantidad";
 const char* DataBaseUtils::TareaCortadoFields::FECHA = "Fecha";
-const char* DataBaseUtils::TareaCortadoFields::ID = "Id Tarea Cortado";
+const char* DataBaseUtils::TareaCortadoFields::ID = "Id_Tarea_Cortado";
 const char* DataBaseUtils::TareaCortadoFields::ID_BOBINA = DataBaseUtils::BobinasFields::ID;
 const char* DataBaseUtils::TareaCortadoFields::ID_MAQUINA = DataBaseUtils::MaquinasFields::ID;
 const char* DataBaseUtils::TareaCortadoFields::ID_MEDIDA_BOLSA = DataBaseUtils::MedidasBolsasFields::ID;
 const char* DataBaseUtils::TareaCortadoFields::ID_OPERARIO = DataBaseUtils::OperariosFields::ID;
 
 const char* DataBaseUtils::TareaExtrusadoFields::FECHA = "Fecha";
-const char* DataBaseUtils::TareaExtrusadoFields::ID = "Id Tarea Extrusado";
+const char* DataBaseUtils::TareaExtrusadoFields::ID = "Id_Tarea_Extrusado";
 const char* DataBaseUtils::TareaExtrusadoFields::ID_BOBINA = DataBaseUtils::BobinasFields::ID;
 const char* DataBaseUtils::TareaExtrusadoFields::ID_MAQUINA = DataBaseUtils::MaquinasFields::ID;
 const char* DataBaseUtils::TareaExtrusadoFields::ID_OPERARIO = DataBaseUtils::OperariosFields::ID;
 
 const char* DataBaseUtils::TareaFiltradoFields::FECHA = "Fecha";
-const char* DataBaseUtils::TareaFiltradoFields::ID = "Id Tarea Filtrado";
+const char* DataBaseUtils::TareaFiltradoFields::ID = "Id_Tarea_Filtrado";
 const char* DataBaseUtils::TareaFiltradoFields::ID_MAQUINA = DataBaseUtils::MaquinasFields::ID;
 const char* DataBaseUtils::TareaFiltradoFields::ID_OPERARIO = DataBaseUtils::OperariosFields::ID;
 const char* DataBaseUtils::TareaFiltradoFields::KILOS = "Kilos";
 
 const char* DataBaseUtils::TareaLavadoFields::FECHA = "Fecha";
-const char* DataBaseUtils::TareaLavadoFields::ID = "Id Tarea Lavado";
+const char* DataBaseUtils::TareaLavadoFields::ID = "Id_Tarea_Lavado";
 const char* DataBaseUtils::TareaLavadoFields::ID_MAQUINA = DataBaseUtils::MaquinasFields::ID;
 const char* DataBaseUtils::TareaLavadoFields::ID_OPERARIO = DataBaseUtils::OperariosFields::ID;
 const char* DataBaseUtils::TareaLavadoFields::KILOS = "Kilos";
 
 const char* DataBaseUtils::TareaRebobinadoFields::FECHA = "Fecha";
-const char* DataBaseUtils::TareaRebobinadoFields::ID = "Id Tarea Rebobinado";
+const char* DataBaseUtils::TareaRebobinadoFields::ID = "Id_Tarea_Rebobinado";
 const char* DataBaseUtils::TareaRebobinadoFields::ID_BOBINA = DataBaseUtils::BobinasFields::ID;
 const char* DataBaseUtils::TareaRebobinadoFields::ID_MAQUINA = DataBaseUtils::MaquinasFields::ID;
 const char* DataBaseUtils::TareaRebobinadoFields::ID_OPERARIO = DataBaseUtils::OperariosFields::ID;
 
-const char* DataBaseUtils::TiposMaquinasFields::ID = "Id Tipo de Maquina";
+const char* DataBaseUtils::TiposMaquinasFields::ID = "Id_Tipo_de_Maquina";
 const char* DataBaseUtils::TiposMaquinasFields::TIPO = "Tipo";
 
 const std::string createBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::BOBINAS) +
@@ -84,7 +84,7 @@ const std::string createBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils
 const char* DataBaseUtils::CreationCommands::createBobinas = createBobinasStr.c_str();
 
 const std::string createMaquinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::MAQUINAS) +
-                                      "(" +
+                                      " (" +
                                       std::string(DataBaseUtils::MaquinasFields::ID)          + " int    NOT NULL ," +
                                       std::string(DataBaseUtils::MaquinasFields::DESCRIPCION) + " string          ," +
                                       std::string(DataBaseUtils::MaquinasFields::TIPO)        + " int    NOT NULL ," +
