@@ -3,14 +3,17 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
+#include <QStatusBar>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class Admin;
 class CargaTareas;
+class QPropertyAnimation;
 class InicioSesion;
-class SimpleCrypt;
+class NotificationSender;
 
 class MainWindow : public QMainWindow
 {
@@ -21,14 +24,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_successfulLogin();
-/*  void on_ordenDeTrabajoStored(QString aID);
-    void on_showError(QString aError);
-    void on_showWarning(QString aWarning);
-    void on_showInfo(QString aInfo);
+    void on_operarioLogin();
+    void on_administratorLogin();
+
+    void on_showError(const QString& aError);
+    void on_showWarning(const QString& aWarning);
+    void on_showInfo(const QString& aInfo);
     void on_clearStatusBar();
 
-    void on_pushButtonHome_clicked();
+    void on_statusBarFadeOutFinished();
+    void on_statusBarFadeInFinished();
+
+/*    void on_pushButtonHome_clicked();
 
     void on_pushButtonHome_pressed();
 
@@ -59,15 +66,25 @@ private slots:
     void on_pushButtonHome_Inventario_clicked();
 */
 
+    void on_pushButton_CerrarSesion_clicked();
+
 private:
+
+    void hideViews();
     void setupDataBase();
+    bool setUser();
 //    void setupHome();
 
     // Views
+    Admin* mAdmin;
     CargaTareas* mCargaTareas;
     InicioSesion* mInicioSesion;
 
-    SimpleCrypt* mCrypt;
+    unsigned int mFadeCycles;
+    QPropertyAnimation* mStatusBarFadeInAnimation;
+    QPropertyAnimation* mStatusBarFadeOutAnimation;
+
+    NotificationSender* mNotificationSender;
     QSqlDatabase mDb;
     Ui::MainWindow* mUi;
 

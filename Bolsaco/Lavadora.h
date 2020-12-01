@@ -15,8 +15,11 @@ public:
     explicit Lavadora(QWidget *parent = nullptr);
     ~Lavadora();
 
+    std::vector<double> getKilosBolsones() const;
+    void clear();
+
 private:
-    Ui::Lavadora *ui;
+    Ui::Lavadora *mUi;
 };
 
 #endif // LAVADORA_H

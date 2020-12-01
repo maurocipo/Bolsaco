@@ -9,12 +9,6 @@ NotificationSender::~NotificationSender()
 {
 }
 
-/*void
-NotificationSender::emitOrdenDeTrabajoStored(const QString& aID)
-{
-    emit ordenDeTrabajoStored(aID);
-}
-
 void
 NotificationSender::emitShowError(const QString& aError)
 {
@@ -32,9 +26,9 @@ NotificationSender::emitShowInfo(const QString& aInfo)
 {
     emit showInfo(aInfo);
 }
+
 void
 NotificationSender::emitClearStatusBar()
 {
     emit clearStatusBar();
 }
-*/

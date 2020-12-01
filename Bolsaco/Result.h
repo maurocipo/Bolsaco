@@ -6,7 +6,8 @@
 enum Status
 {
     SUCCEEDED,
-    FAILED
+    FAILED,
+    WARNING
 };
 
 template<typename T>

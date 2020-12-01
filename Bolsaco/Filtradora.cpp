@@ -3,12 +3,24 @@
 
 Filtradora::Filtradora(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Filtradora)
+    mUi(new Ui::Filtradora)
 {
-    ui->setupUi(this);
+    mUi->setupUi(this);
 }
 
 Filtradora::~Filtradora()
 {
-    delete ui;
+    delete mUi;
+}
+
+void
+Filtradora::clear()
+{
+    mUi->doubleSpinBox->clear();
+}
+
+double
+Filtradora::getKilos() const
+{
+    return mUi->doubleSpinBox->value();
 }

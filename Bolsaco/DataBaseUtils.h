@@ -17,6 +17,7 @@ namespace DataBaseUtils
         static const char* MEDIDAS_BOBINAS;
         static const char* MEDIDAS_BOLSAS;
         static const char* OPERARIOS;
+        static const char* PRODUCTOS_REBOBINADO;
         static const char* TAREAS_CORTADO;
         static const char* TAREAS_EXTRUSADO;
         static const char* TAREAS_FILTRADO;
@@ -32,6 +33,7 @@ namespace DataBaseUtils
         static const char* createMedidasBobinas;
         static const char* createMedidasBolsas;
         static const char* createOperarios;
+        static const char* createProductosRebobinado;
         static const char* createTareasCortado;
         static const char* createTareasExtrusado;
         static const char* createTareasFiltrado;
@@ -50,23 +52,30 @@ namespace DataBaseUtils
     {
         static const char* ID;
         static const char* TIPO;
+        static const char* NUMERO;
         static const char* DESCRIPCION;
     };
     struct MedidasBobinasFields
     {
         static const char* ID;
-        static const char* DESCRIPCION;
+        static const char* ANCHO;
+        static const char* MICRONAJE;
     };
     struct MedidasBolsasFields
     {
         static const char* ID;
-        static const char* DESCRIPCION;
+        static const char* LARGO;
     };
     struct OperariosFields
     {
         static const char* ID;
         static const char* NOMBRE_COMPLETO;
         static const char* DNI;
+    };
+    struct ProductosRebobinadoFields
+    {
+        static const char* ID;
+        static const char* DESCRIPCION;
     };
     struct TareaCortadoFields
     {
@@ -107,7 +116,8 @@ namespace DataBaseUtils
         static const char* ID;
         static const char* ID_OPERARIO;
         static const char* ID_MAQUINA;
-        static const char* ID_BOBINA;
+        static const char* ID_PRODUCTO_REBOBINADO;
+        static const char* KILOS;
         static const char* FECHA;
     };
     struct TiposMaquinasFields
@@ -117,11 +127,13 @@ namespace DataBaseUtils
     };
 //------------------------------------------------------
     struct Maquina {
-        Maquina(const int aTipo, const QString aDescripcion):
+        Maquina(const int aTipo, const int aNumero, const QString aDescripcion):
             mTipo(aTipo),
+            mNumero(aNumero),
             mDescripcion(aDescripcion) {}
 
         int mTipo;
+        int mNumero;
         QString mDescripcion;
     };
 
@@ -145,21 +157,15 @@ namespace DataBaseUtils
     };
 
     QString
-    buildSelectQuery(const QString& aTable, const QString& aColumn, const KeyAndValue& aCondition);
-    QString
     buildSelectQuery(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions);
-    QString
-    buildOngoingSelectQuery(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions);
 
     Result<std::vector<KeyAndValue>>
-    select(const QString& aTable, const QString& aColumn, const QString& aExplicitCondition);
-    Result<std::vector<KeyAndValue>>
-    select(const QString& aTable, const QString& aColumn, const KeyAndValue& aCondition);
-    Result<std::vector<KeyAndValue>>
     select(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions);
+
     Result<std::vector<KeyAndValue>>
     internalSelect(const QString& aTable, const QString& aSelectQuery);
 
+    void print(const QString aTable, const QString aColumn);
 
     Result<void>
     insert(const QString& aTable, const KeyAndValue& aToInsert);

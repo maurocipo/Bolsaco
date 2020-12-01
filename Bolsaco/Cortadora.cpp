@@ -3,44 +3,58 @@
 
 Cortadora::Cortadora(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Cortadora)
+    mUi(new Ui::Cortadora)
 {
-    ui->setupUi(this);
+    mUi->setupUi(this);
 }
 
 Cortadora::~Cortadora()
 {
-    delete ui;
+    delete mUi;
 }
 
-std::vector<DataBaseUtils::KeyAndValue>
+void
+Cortadora::clear()
+{
+    mUi->comboBox_Largo->setCurrentIndex(-1);
+
+    mUi->spinBox_CantBobina1->clear();
+    mUi->spinBox_CantBobina2->clear();
+    mUi->spinBox_CantBobina3->clear();
+    mUi->spinBox_CantBobina4->clear();
+    mUi->spinBox_CantBobina5->clear();
+
+    mUi->spinBox_NumBobina1->clear();
+    mUi->spinBox_NumBobina2->clear();
+    mUi->spinBox_NumBobina3->clear();
+    mUi->spinBox_NumBobina4->clear();
+    mUi->spinBox_NumBobina5->clear();
+}
+
+void
+Cortadora::fillLargos(const QStringList& aMedidas)
+{
+    mUi->comboBox_Largo->clear();
+    mUi->comboBox_Largo->addItems(aMedidas);
+    mUi->comboBox_Largo->setCurrentIndex(-1);
+}
+
+QString
+Cortadora::getLargo() const
+{
+    return mUi->comboBox_Largo->currentText();
+}
+
+std::vector<BobinaIdAndCortes>
 Cortadora::getData() const
 {
-    std::vector<DataBaseUtils::KeyAndValue> data;
-/*    double value = ui->spinBox_Medida1->value();
-    if (value != 0) {
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::ID_BOLSA, QString(DataBaseUtils::Bolsas::MEDIDA1)));
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::RESULTADO, QString::number(value)));
-    }
-    value = ui->spinBox_Medida2->value();
-    if (value != 0) {
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::ID_BOLSA, QString(DataBaseUtils::Bolsas::MEDIDA2)));
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::RESULTADO, QString::number(value)));
-    }
-    value = ui->spinBox_Medida3->value();
-    if (value != 0) {
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::ID_BOLSA, QString(DataBaseUtils::Bolsas::MEDIDA3)));
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::RESULTADO, QString::number(value)));
-    }
-    value = ui->spinBox_Medida4->value();
-    if (value != 0) {
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::ID_BOLSA, QString(DataBaseUtils::Bolsas::MEDIDA4)));
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::RESULTADO, QString::number(value)));
-    }
-    value = ui->spinBox_Medida5->value();
-    if (value != 0) {
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::ID_BOLSA, QString(DataBaseUtils::Bolsas::MEDIDA5)));
-        data.push_back(DataBaseUtils::KeyAndValue(DataBaseUtils::TareaFields::RESULTADO, QString::number(value)));
-    }
-*/    return data;
+    std::vector<BobinaIdAndCortes> returnData;
+
+    if (mUi->spinBox_NumBobina1->value() != 0 && mUi->spinBox_CantBobina1->value() != 0) returnData.emplace_back(BobinaIdAndCortes(QString::number(mUi->spinBox_NumBobina1->value()), QString::number(mUi->spinBox_CantBobina1->value())));
+    if (mUi->spinBox_NumBobina2->value() != 0 && mUi->spinBox_CantBobina2->value() != 0) returnData.emplace_back(BobinaIdAndCortes(QString::number(mUi->spinBox_NumBobina2->value()), QString::number(mUi->spinBox_CantBobina2->value())));
+    if (mUi->spinBox_NumBobina3->value() != 0 && mUi->spinBox_CantBobina3->value() != 0) returnData.emplace_back(BobinaIdAndCortes(QString::number(mUi->spinBox_NumBobina3->value()), QString::number(mUi->spinBox_CantBobina3->value())));
+    if (mUi->spinBox_NumBobina4->value() != 0 && mUi->spinBox_CantBobina4->value() != 0) returnData.emplace_back(BobinaIdAndCortes(QString::number(mUi->spinBox_NumBobina4->value()), QString::number(mUi->spinBox_CantBobina4->value())));
+    if (mUi->spinBox_NumBobina5->value() != 0 && mUi->spinBox_CantBobina5->value() != 0) returnData.emplace_back(BobinaIdAndCortes(QString::number(mUi->spinBox_NumBobina5->value()), QString::number(mUi->spinBox_CantBobina5->value())));
+
+    return returnData;
 }

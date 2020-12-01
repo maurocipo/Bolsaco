@@ -9,6 +9,14 @@ namespace Ui {
 class Cortadora;
 }
 
+struct BobinaIdAndCortes {
+    BobinaIdAndCortes(const QString& aBobinaId, const QString& aCortes)
+        : mBobinaId(aBobinaId), mCortes(aCortes) {}
+
+    QString mBobinaId;
+    QString mCortes;
+};
+
 class Cortadora : public QWidget
 {
     Q_OBJECT
@@ -17,10 +25,14 @@ public:
     explicit Cortadora(QWidget *parent = nullptr);
     ~Cortadora();
 
-    std::vector<DataBaseUtils::KeyAndValue> getData() const;
+    void clear();
+    void fillLargos(const QStringList& aMedidas);
+
+    QString getLargo() const;
+    std::vector<BobinaIdAndCortes> getData() const;
 
 private:
-    Ui::Cortadora *ui;
+    Ui::Cortadora *mUi;
 };
 
 #endif // CORTADORA_H

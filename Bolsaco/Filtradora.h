@@ -15,8 +15,12 @@ public:
     explicit Filtradora(QWidget *parent = nullptr);
     ~Filtradora();
 
+    void clear();
+
+    double getKilos() const;
+
 private:
-    Ui::Filtradora *ui;
+    Ui::Filtradora *mUi;
 };
 
 #endif // FILTRADORA_H

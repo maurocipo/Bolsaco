@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>781</width>
+    <height>649</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -87,28 +87,28 @@
     <rect>
      <x>10</x>
      <y>100</y>
-     <width>781</width>
+     <width>761</width>
      <height>501</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="pushButton_guardar">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>450</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>15</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Guardar Orden</string>
-    </property>
-   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton_guardar">
+   <property name="geometry">
+    <rect>
+     <x>610</x>
+     <y>610</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Guardar Orden</string>
+   </property>
   </widget>
  </widget>
  <tabstops>
