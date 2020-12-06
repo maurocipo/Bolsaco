@@ -20,6 +20,11 @@ InicioSesion::InicioSesion(NotificationSender* aNotificationSender, QWidget* par
 {
     mUi->setupUi(this);
 
+    mUi->label_ErrorDNI->setStyleSheet("color: rgba(255,0,0,0.5)");
+    mUi->label_ErrorDNI->hide();
+    mUi->label_ErrorContras->setStyleSheet("color: rgba(255,0,0,0.5)");
+    mUi->label_ErrorContras->hide();
+
     if (QFile::exists(mAccessFile) == false) {
         // Crear usuarios y claves por defecto
         QFile file(mAccessFile);
@@ -46,6 +51,11 @@ InicioSesion::~InicioSesion()
 
 void InicioSesion::on_pushButton_IniciarSesion_pressed()
 {
+    if (mUi->label_ErrorDNI->isVisible()) {
+        mNotificationSender->emitShowError("El DNI no esta regstrado!");
+        return;
+    }
+
     if (QFile::exists(mAccessFile) == false) {
         mNotificationSender->emitShowError("No existe el archivo de claves!");
         return;
@@ -55,6 +65,7 @@ void InicioSesion::on_pushButton_IniciarSesion_pressed()
     const QString DNI = mUi->lineEdit_DNI->text();
     const QString password = mUi->lineEdit_Contrasena->text();
 
+    bool successfulLogin = false;
     // Read the file and try to find the user.
     QFile file(mAccessFile);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -67,18 +78,30 @@ void InicioSesion::on_pushButton_IniciarSesion_pressed()
                 mCurrentUser = DNI.toInt();
                 if (mCurrentUser == 34990189) {
                     emitAdministratorLogin();
-                    mNotificationSender->emitShowWarning("CUIDADO: Login Administrador exitoso.");
+                    mNotificationSender->emitShowWarning(mNotificationSender->WARN_ADMIN_USER_LOGGED);
                 } else {
                     mNotificationSender->emitShowInfo("Login exitoso!");
                     emitOperarioLogin();
                 }
+                successfulLogin = true;
                 break;
             }
         }
     }
     file.close();
-    mUi->lineEdit_Contrasena->clear();
-    mUi->lineEdit_DNI->clear();
+
+    if (successfulLogin) {
+        mUi->label_ErrorContras->hide();
+        mUi->label_SignoContras->hide();
+        mUi->label_SignoUsuario->hide();
+        mUi->lineEdit_Contrasena->clear();
+        mUi->lineEdit_DNI->clear();
+    } else {
+        mUi->label_SignoContras->setStyleSheet("border-image: url(:Images/Incorrect.png) 0 0 0 0 stretch stretch;");
+        mUi->label_SignoContras->show();
+        mUi->label_ErrorContras->show();
+        mNotificationSender->emitShowError("Contraseña Incorrecta.");
+    }
 }
 
 void
@@ -102,6 +125,12 @@ void InicioSesion::on_lineEdit_DNI_editingFinished()
 {
     if (DataBaseUtils::exists(DataBaseUtils::TableNames::OPERARIOS, DataBaseUtils::KeyAndValue(DataBaseUtils::OperariosFields::DNI, mUi->lineEdit_DNI->text())) == false) {
         mUi->label_SignoUsuario->setStyleSheet("border-image: url(:Images/Incorrect.png) 0 0 0 0 stretch stretch;");
-        mUi->label_SignoUsuario->show();
+        mUi->label_ErrorDNI->show();
+        mNotificationSender->emitShowError("El DNI no esta regstrado!");
+    } else {
+        mUi->label_SignoUsuario->setStyleSheet("border-image: url(:Images/Correct.png) 0 0 0 0 stretch stretch;");
+        mUi->label_ErrorDNI->hide();
+        mNotificationSender->clearStatusBar();
     }
+    mUi->label_SignoUsuario->show();
 }

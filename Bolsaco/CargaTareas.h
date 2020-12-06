@@ -42,10 +42,6 @@ private:
 
     QStringList buildMedidasBobinasForDisplay() const;
     QStringList buildLargosCortesForDisplay() const;
-    QString getGratestBobinaId() const;
-
-    Result<QString> getCurrentUserId() const;
-    Result<QString> getCurrentMaquinaId(const int aTipoDeMaquina) const;
 
     // Maquinas
     Cortadora* mCortadora;

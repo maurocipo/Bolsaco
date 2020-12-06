@@ -1,5 +1,7 @@
 #include "NotificationSender.h"
 
+const char* NotificationSender::WARN_ADMIN_USER_LOGGED = "CUIDADO: Login Administrador.";
+
 NotificationSender::NotificationSender(QWidget *aParent)
     : QWidget(aParent)
 {

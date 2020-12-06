@@ -10,6 +10,8 @@
 
 #include "NotificationSender.h"
 
+const char* DataBaseUtils::dateFormat = "dd.MM.yyyy hh:mm:ss";
+
 const char* DataBaseUtils::TableNames::BOBINAS = "Bobinas";
 const char* DataBaseUtils::TableNames::MAQUINAS = "Maquinas";
 const char* DataBaseUtils::TableNames::MEDIDAS_BOBINAS = "Medidas_Bobinas";
@@ -172,7 +174,7 @@ const char* DataBaseUtils::CreationCommands::createTareasFiltrado = createTareas
 
 const std::string createTareasLavadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_LAVADO) +
                                           "(" +
-                                          std::string(DataBaseUtils::TareaLavadoFields::FECHA)       + " string    NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::FECHA)       + " date    NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID)          + " integer NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID_MAQUINA)  + " integer NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID_OPERARIO) + " integer NOT NULL," +
@@ -222,6 +224,17 @@ Result<std::vector<DataBaseUtils::KeyAndValue>>
 DataBaseUtils::select(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions)
 {
     return internalSelect(aTable, buildSelectQuery(aTable, aColumn, aConditions));
+}
+
+Result<std::vector<DataBaseUtils::KeyAndValue>>
+DataBaseUtils::selectBetweenDates(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions, const FechaKeyAndValues& aDates)
+{
+    QString query = buildSelectQuery(aTable, aColumn, aConditions);
+    QString desde = aDates.mDesde;//QDate::fromString(aDates.mDesde, dateFormat).toString("yyyy-MM-dd");
+    QString hasta = aDates.mHasta;//QDate::fromString(aDates.mHasta, dateFormat).toString("yyyy-MM-dd");
+    query.append(" AND (").append(aDates.mKey).append(" BETWEEN '" + desde + "' AND '" + hasta + "')");
+
+    return internalSelect(aTable, query);
 }
 
 Result<std::vector<DataBaseUtils::KeyAndValue>>
@@ -465,4 +478,58 @@ DataBaseUtils::getTableEntriesCount(const QString& aTable)
         return Result<int>(Status::FAILED, query.lastError().text());
     }
 
+}
+
+Result<QString>
+DataBaseUtils::getGratestBobinaId()
+{
+    std::vector<KeyAndValue> conditions;
+    Result<std::vector<KeyAndValue>> result = select(TableNames::BOBINAS, BobinasFields::ID, conditions);
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<QString>(Status::FAILED, result.error());
+    }
+    if (result.value().empty()) {
+        return QString::number(0);
+    } else {
+        return result.value().back().mValue;
+    }
+}
+
+Result<QString>
+DataBaseUtils::getCurrentUserId(const int aCurrentUser)
+{
+    // Get mCurrentUser id
+    if (exists(TableNames::OPERARIOS,
+                              KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUser))) == false) {
+        return Result<QString>(Status::FAILED, "El operario no existe en la base de datos.");
+    }
+
+    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUser))};
+    Result<std::vector<KeyAndValue>> result = select(TableNames::OPERARIOS, OperariosFields::ID, conditions);
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<QString>(Status::FAILED, result.error());
+    }
+    if (result.value().size() != 1) {
+        return Result<QString>(Status::FAILED, "Error buscando ID de Operario. Posible DNI duplicado?");
+    }
+    return result.value().begin()->mValue;
+}
+
+Result<QString>
+DataBaseUtils::getCurrentMaquinaId(const int aTipoDeMaquina, const int aNumeroDeMaquina)
+{
+
+    if (aNumeroDeMaquina == 0) {
+        return Result<QString>(Status::FAILED, "Numero de Maquina no seleccionado.");
+    }
+    std::vector<KeyAndValue> conditions = {KeyAndValue(MaquinasFields::TIPO, QString::number(aTipoDeMaquina)),
+                                           KeyAndValue(MaquinasFields::NUMERO, QString::number(aNumeroDeMaquina))};
+    Result<std::vector<KeyAndValue>> selectResult = select(TableNames::MAQUINAS, MaquinasFields::ID, conditions);
+    if (selectResult.status() != Status::SUCCEEDED) {
+        return Result<QString>(Status::FAILED, selectResult.error());
+    }
+    if (selectResult.value().size() != 1) {
+        return Result<QString>(Status::FAILED, "Error buscando ID de Maquina. Posible Maquina duplicada?");
+    }
+    return selectResult.value().begin()->mValue;
 }

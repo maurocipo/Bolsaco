@@ -10,6 +10,8 @@
 
 namespace DataBaseUtils
 {
+    extern const char* dateFormat;
+
     struct TableNames
     {
         static const char* BOBINAS;
@@ -156,11 +158,25 @@ namespace DataBaseUtils
         QString mValue;
     };
 
+    struct FechaKeyAndValues
+    {
+        FechaKeyAndValues() {};
+        FechaKeyAndValues(const QString& aKey, const QString& aDesde, const QString& aHasta)
+            : mKey(aKey), mDesde(aDesde), mHasta(aHasta) {}
+
+        QString mKey;
+        QString mDesde;
+        QString mHasta;
+    };
+
     QString
     buildSelectQuery(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions);
 
     Result<std::vector<KeyAndValue>>
     select(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions);
+
+    Result<std::vector<KeyAndValue>>
+    selectBetweenDates(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions, const FechaKeyAndValues& aDates);
 
     Result<std::vector<KeyAndValue>>
     internalSelect(const QString& aTable, const QString& aSelectQuery);
@@ -183,9 +199,14 @@ namespace DataBaseUtils
     Result<int>
     getTableEntriesCount(const QString& aTable);
 
-    QString
-    convertDateToDDMMYYY(const QDate& aDate);
-    QString
-    convertDateToYYYYMMDD(const QDate& aDate);
+    Result<QString>
+    getGratestBobinaId();
+
+    Result<QString>
+    getCurrentUserId(const int aCurrentUser);
+
+    Result<QString>
+    getCurrentMaquinaId(const int aTipoDeMaquina, const int aNumeroDeMaquina);
+
 };
 #endif // DATABASEUTILS_H

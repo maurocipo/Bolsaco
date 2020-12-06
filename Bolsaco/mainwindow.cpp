@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *aParent)
 
     mNotificationSender = new NotificationSender();
 
-    mAdmin = new Admin(mUi->showWidget);
+    mAdmin = new Admin(mNotificationSender, mUi->showWidget);
     mAdmin->hide();
 
     mCargaTareas = new CargaTareas(mNotificationSender, mUi->showWidget);
@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *aParent)
 
 MainWindow::~MainWindow()
 {
-    if (true) {
+    if (false) {
         // USED FOR DEV. SHOULD GO AWAY
         mDb.removeDatabase(mDb.connectionName());
         if(QFile(QCoreApplication::applicationDirPath() + "/Bolsaco").remove()) std::cout << "BORRO DB" << std::endl;

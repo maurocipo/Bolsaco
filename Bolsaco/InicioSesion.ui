@@ -119,10 +119,53 @@
     </rect>
    </property>
    <property name="text">
-    <string>         </string>
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_ErrorDNI">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>132</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <italic>true</italic>
+    </font>
+   </property>
+   <property name="text">
+    <string>DNI no registrado.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_ErrorContras">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>170</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <italic>true</italic>
+    </font>
+   </property>
+   <property name="text">
+    <string>Contraseña Incorrecta.</string>
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit_DNI</tabstop>
+  <tabstop>lineEdit_Contrasena</tabstop>
+  <tabstop>pushButton_IniciarSesion</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

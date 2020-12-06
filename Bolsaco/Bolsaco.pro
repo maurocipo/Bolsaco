@@ -70,7 +70,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     Images/Correct.png \
-    Images/Incorrect.png
+    Images/Incorrect.png \
+    Other/DBDiagram.drawio
 
 RESOURCES += \
     Resources.qrc

@@ -35,7 +35,31 @@ const std::vector<DataBaseUtils::Operario>
 Operarios {
     DataBaseUtils::Operario("Mauro Cipolatti", 34990189),
     DataBaseUtils::Operario("Martin Cipolatti", 28268919),
-    DataBaseUtils::Operario("Juan Perez", 10000000)
+    DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
+            DataBaseUtils::Operario("Juan Perez", 10000000),
 };
 
 // This enum matches with CantidadMaquinas array.

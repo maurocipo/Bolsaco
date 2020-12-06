@@ -13,8 +13,6 @@
 
 using namespace DataBaseUtils;
 
-const char* dateFormat = "dd.MM.yyyy hh:mm:ss";
-
 CargaTareas::CargaTareas(NotificationSender* aNotificationSender, QWidget *parent) :
     QWidget(parent),
     mCurrentUser(0),
@@ -54,7 +52,11 @@ CargaTareas::on_comboBox_numero_currentIndexChanged(int aMachineNumber)
             mCortadora->show();
         } else if (machineIndex == DataBaseData::TiposMaquinas::EXTRUSORA) {
             mExtrusora->fillMedidas(buildMedidasBobinasForDisplay());
-            mExtrusora->setBobinasIds(getGratestBobinaId());
+            Result<QString> result = getGratestBobinaId();
+            if (result.status() != Status::FAILED) {
+                mNotificationSender->emitShowError(result.error());
+            }
+            mExtrusora->setBobinasIds(result.value());
             mExtrusora->clear();
             mExtrusora->show();
         } else if (machineIndex == DataBaseData::TiposMaquinas::FILTRADORA) {
@@ -117,7 +119,7 @@ CargaTareas::on_pushButton_guardar_pressed()
        "Fecha        date    NOT NULL ,"
        "Resultado    string  NOT NULL ,"
     */
-    Result<QString> stringResult = getCurrentUserId();
+    Result<QString> stringResult = getCurrentUserId(mCurrentUser);
     if (stringResult.status() != Status::SUCCEEDED) {
         if (stringResult.status() != Status::FAILED) {
             mNotificationSender->emitShowError(stringResult.error());
@@ -134,7 +136,7 @@ CargaTareas::on_pushButton_guardar_pressed()
         return;
     }
 
-    stringResult = getCurrentMaquinaId(tipoDeMaquina);
+    stringResult = getCurrentMaquinaId(tipoDeMaquina, mUi->comboBox_numero->currentIndex() + 1);
     if (stringResult.status() != Status::SUCCEEDED) {
         if (stringResult.status() != Status::FAILED) {
             mNotificationSender->emitShowError(stringResult.error());
@@ -247,61 +249,6 @@ CargaTareas::buildLargosCortesForDisplay() const
     return returnData;
 }
 
-QString
-CargaTareas::getGratestBobinaId() const
-{
-    std::vector<KeyAndValue> conditions;
-    Result<std::vector<KeyAndValue>> result = select(TableNames::BOBINAS, BobinasFields::ID, conditions);
-    if (result.status() != Status::SUCCEEDED) {
-        mNotificationSender->emitShowError(result.error());
-        return QString("*");
-    }
-    if (result.value().empty()) {
-        return QString::number(0);
-    } else {
-        return result.value().back().mValue;
-    }
-}
-
-Result<QString>
-CargaTareas::getCurrentUserId() const
-{
-    // Get mCurrentUser id
-    if (DataBaseUtils::exists(TableNames::OPERARIOS,
-                              KeyAndValue(OperariosFields::DNI, QString::number(mCurrentUser))) == false) {
-        return Result<QString>(Status::FAILED, "El operario no existe en la base de datos.");
-    }
-
-    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::DNI, QString::number(mCurrentUser))};
-    Result<std::vector<KeyAndValue>> result = DataBaseUtils::select(TableNames::OPERARIOS, OperariosFields::ID, conditions);
-    if (result.status() != Status::SUCCEEDED) {
-        return Result<QString>(Status::FAILED, result.error());
-    }
-    if (result.value().size() != 1) {
-        return Result<QString>(Status::FAILED, "Error buscando ID de Operario. Posible DNI duplicado?");
-    }
-    return result.value().begin()->mValue;
-}
-
-Result<QString>
-CargaTareas::getCurrentMaquinaId(const int aTipoDeMaquina) const
-{
-    const int numeroDeMaquina = mUi->comboBox_numero->currentIndex() + 1;
-    if (numeroDeMaquina == 0) {
-        return Result<QString>(Status::FAILED, "Numero de Maquina no seleccionado.");
-    }
-    std::vector<KeyAndValue> conditions = {KeyAndValue(MaquinasFields::TIPO, QString::number(aTipoDeMaquina)),
-                                           KeyAndValue(MaquinasFields::NUMERO, QString::number(numeroDeMaquina))};
-    Result<std::vector<KeyAndValue>> selectResult = DataBaseUtils::select(TableNames::MAQUINAS, MaquinasFields::ID, conditions);
-    if (selectResult.status() != Status::SUCCEEDED) {
-        return Result<QString>(Status::FAILED, selectResult.error());
-    }
-    if (selectResult.value().size() != 1) {
-        return Result<QString>(Status::FAILED, "Error buscando ID de Maquina. Posible Maquina duplicada?");
-    }
-    return selectResult.value().begin()->mValue;
-}
-
 Result<void>
 CargaTareas::storeTareaCortado(const QString& aIdMaquina, const QString& aIdOperario)
 {
@@ -360,7 +307,7 @@ CargaTareas::storeTareaExtrusado(const QString& aIdMaquina, const QString& aIdOp
     // Crea bobinas (y tareas de extrusado)
     Medida medida = mExtrusora->getMedida();
     if (medida.mAncho.isEmpty() || medida.mMicronaje.isEmpty()) {
-        return Result<void>(Status::WARNING, "Medida de Bobina no seleccionado.");
+        return Result<void>(Status::WARNING, "Ancho/Micronaje no seleccionado.");
     }
     std::vector<KeyAndValue> conditions = {KeyAndValue(MedidasBobinasFields::ANCHO, medida.mAncho),
                                            KeyAndValue(MedidasBobinasFields::MICRONAJE, medida.mMicronaje)};
@@ -397,6 +344,11 @@ CargaTareas::storeTareaExtrusado(const QString& aIdMaquina, const QString& aIdOp
         }
     }
     mExtrusora->clear();
+    Result<QString> result = getGratestBobinaId();
+    if (result.status() == Status::FAILED) {
+        mNotificationSender->emitShowError(result.error());
+    }
+    mExtrusora->setBobinasIds(result.value());
 
     return Status::SUCCEEDED;
 }
@@ -404,10 +356,10 @@ CargaTareas::storeTareaExtrusado(const QString& aIdMaquina, const QString& aIdOp
 Result<void>
 CargaTareas::storeTareaFiltrado(const QString& aIdMaquina, const QString& aIdOperario)
 {
-    QString kilos = QString::number(mFiltradora->getKilos());
-    if (kilos.isEmpty()) {
+    if (mFiltradora->getKilos() == 0) {
         return Result<void>(Status::WARNING, "Inserte un resultado.");
     }
+    QString kilos = QString::number(mFiltradora->getKilos());
     std::vector<KeyAndValue> newData = {KeyAndValue(TareaFiltradoFields::FECHA, QDateTime::currentDateTime().toString(dateFormat))};
     newData.push_back(KeyAndValue(TareaFiltradoFields::ID_MAQUINA, aIdMaquina));
     newData.push_back(KeyAndValue(TareaFiltradoFields::ID_OPERARIO, aIdOperario));

@@ -22,6 +22,8 @@ public:
     explicit NotificationSender(QWidget *aParent = nullptr);
     ~NotificationSender();
 
+    static const char* WARN_ADMIN_USER_LOGGED;
+
     void emitShowError(const QString& aError);
     void emitShowWarning(const QString& aWarning);
     void emitShowInfo(const QString& aInf);
