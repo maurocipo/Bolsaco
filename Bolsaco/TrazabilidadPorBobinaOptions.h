@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+#include "DataBaseUtils.h"
+#include "Result.h"
+
 namespace Ui {
 class TrazabilidadPorBobinaOptions;
 }
@@ -15,8 +18,12 @@ public:
     explicit TrazabilidadPorBobinaOptions(QWidget *parent = nullptr);
     ~TrazabilidadPorBobinaOptions();
 
+    Result<QString> getHTMLTable() const;
+
 private:
-    Ui::TrazabilidadPorBobinaOptions *ui;
+    std::vector<DataBaseUtils::KeyAndValue> getBobinasConditions() const;
+
+    Ui::TrazabilidadPorBobinaOptions *mUi;
 };
 
 #endif // TRAZABILIDADPORBOBINAOPTIONS_H

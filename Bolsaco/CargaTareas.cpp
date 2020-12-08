@@ -53,7 +53,7 @@ CargaTareas::on_comboBox_numero_currentIndexChanged(int aMachineNumber)
         } else if (machineIndex == DataBaseData::TiposMaquinas::EXTRUSORA) {
             mExtrusora->fillMedidas(buildMedidasBobinasForDisplay());
             Result<QString> result = getGratestBobinaId();
-            if (result.status() != Status::FAILED) {
+            if (result.status() == Status::FAILED) {
                 mNotificationSender->emitShowError(result.error());
             }
             mExtrusora->setBobinasIds(result.value());

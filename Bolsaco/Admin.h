@@ -8,8 +8,10 @@ class Admin;
 }
 
 class ActividadPorEmpleadoOptions;
+class QPrintPreviewDialog;
+class QPrinter;
+class QTextDocument;
 class NotificationSender;
-class PrintPreview;
 class TrazabilidadPorBobinaOptions;
 
 class Admin : public QWidget
@@ -28,13 +30,18 @@ private slots:
 
     void on_pushButton_TrazBobinas_pressed();
 
+    void printPreview(QPrinter*);
+
 private:
     void hideOptions();
 
     ActividadPorEmpleadoOptions* mActividadPorEmpleadoOptions;
     NotificationSender* mNotificationSender;
-    PrintPreview* mPrintPreview;
     TrazabilidadPorBobinaOptions* mTrazabilidadPorBobinaOptions;
+
+    QPrintPreviewDialog* mQPrintPreviewDialog;
+    QPrinter* mQPrinter;
+    QTextDocument* mQTextBrowser;
 
     Ui::Admin *mUi;
 };

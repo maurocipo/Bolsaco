@@ -94,7 +94,8 @@ ActividadPorEmpleadoOptions::getHTMLTable()
     QString htmlString;
 
     htmlString.append("<h2 style='color: #2e6c80; text-align: center;'>Actividad de Empleado</h2>");
-    htmlString.append("<p style='text-align-last: justify;'><strong>DNI: </strong>" + mSelectedOperario);
+    htmlString.append("<p style='text-align-last: justify;'><strong>Nombre: </strong>" + getCurrentUserName(mSelectedOperario).value());
+    htmlString.append(" &nbsp;&nbsp;&nbsp;&nbsp; <strong>DNI:</strong> " + mSelectedOperario);
 
     QString desde(mUi->dateTimeEdit_Desde->dateTime().toString(dateFormat));
     QString hasta(mUi->dateTimeEdit_Hasta->dateTime().toString(dateFormat));
@@ -120,6 +121,33 @@ ActividadPorEmpleadoOptions::getHTMLTable()
 
     const bool isTareaEnabled = mUi->checkBox_Tarea->isChecked();
     if (isTareaEnabled == false ||
+        (isTareaEnabled && mUi->comboBox_Tarea->currentIndex() == DataBaseData::TiposMaquinas::CORTADORA)) {
+
+        Result<QString> tareaCortado = buildTareaCortado(userId, desde, hasta);
+        if (tareaCortado.status() == Status::FAILED) {
+            return tareaCortado;
+        }
+        htmlString.append(tareaCortado.value());
+    }
+    if (isTareaEnabled == false ||
+        (isTareaEnabled && mUi->comboBox_Tarea->currentIndex() == DataBaseData::TiposMaquinas::EXTRUSORA)) {
+
+        Result<QString> tareaExtrusado = buildTareaExtrusado(userId, desde, hasta);
+        if (tareaExtrusado.status() == Status::FAILED) {
+            return tareaExtrusado;
+        }
+        htmlString.append(tareaExtrusado.value());
+    }
+    if (isTareaEnabled == false ||
+        (isTareaEnabled && mUi->comboBox_Tarea->currentIndex() == DataBaseData::TiposMaquinas::FILTRADORA)) {
+
+        Result<QString> tareaFiltrado = buildTareaFiltrado(userId, desde, hasta);
+        if (tareaFiltrado.status() == Status::FAILED) {
+            return tareaFiltrado;
+        }
+        htmlString.append(tareaFiltrado.value());
+    }
+    if (isTareaEnabled == false ||
         (isTareaEnabled && mUi->comboBox_Tarea->currentIndex() == DataBaseData::TiposMaquinas::LAVADORA)) {
 
         Result<QString> tareaLavado = buildTareaLavado(userId, desde, hasta);
@@ -128,6 +156,230 @@ ActividadPorEmpleadoOptions::getHTMLTable()
         }
         htmlString.append(tareaLavado.value());
     }
+    if (isTareaEnabled == false ||
+        (isTareaEnabled && mUi->comboBox_Tarea->currentIndex() == DataBaseData::TiposMaquinas::REBOBINADORA)) {
+
+        Result<QString> tareaRebobinado = buildTareaRebobinado(userId, desde, hasta);
+        if (tareaRebobinado.status() == Status::FAILED) {
+            return tareaRebobinado;
+        }
+        htmlString.append(tareaRebobinado.value());
+    }
+    return htmlString;
+}
+
+Result<QString>
+ActividadPorEmpleadoOptions::buildTareaCortado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const
+{
+    QString htmlString;
+    htmlString.append("<h3 style='color: #2e6c80; text-align: center;'>Cortado</h3>");
+    htmlString.append("<table width = '100%'>");
+    htmlString.append("<u><thead><tr>");
+    htmlString.append("<th align = center valign = middle>Fecha</th>");
+    htmlString.append("<th align = center valign = middle>Máquina</th>");
+    htmlString.append("<th align = center valign = middle>ID_Bobina</th>");
+    htmlString.append("<th align = center valign = middle>Medida_Bobina (Ancho/Micron)</th>");
+    htmlString.append("<th align = center valign = middle>Largo_Bolsa</th>");
+    htmlString.append("<th align = center valign = middle>Cantidad</th>");
+    htmlString.append("</tr></thead></u>");
+
+    // Data
+    std::vector<KeyAndValue> condition = {KeyAndValue(TareaCortadoFields::ID_OPERARIO, aUserId)};
+    if (mUi->checkBox_Maquina->isChecked()) {
+        QStringList list = mUi->comboBox_Maquina->currentText().split(" ");
+
+        if (list.first() != DataBaseData::TiposMaquinasStr[DataBaseData::TiposMaquinas::CORTADORA]) {
+            return QString();
+        }
+        Result<QString> maquinaResult = getCurrentMaquinaId(DataBaseData::TiposMaquinas::CORTADORA, list.back().toInt());
+        if (maquinaResult.status() == Status::FAILED) {
+            return maquinaResult;
+        }
+        condition.push_back(KeyAndValue(TareaCortadoFields::ID_MAQUINA, maquinaResult.value()));
+    }
+    Result<std::vector<KeyAndValue>> selectRes = selectBetweenDates(TableNames::TAREAS_CORTADO,
+                                                                    "*",
+                                                                    condition,
+                                                                    FechaKeyAndValues(TareaCortadoFields::FECHA, aDesde, aHasta));
+    if(selectRes.status() == Status::FAILED) {
+        return Result<QString>(Status::FAILED, selectRes.error());
+    }
+    std::vector<KeyAndValue> data = selectRes.value();
+
+    MappedTable map;
+    for (KeyAndValue keyAndValue : data) {
+        if (keyAndValue.mKey == TareaCortadoFields::FECHA) {
+            map[TareaCortadoFields::FECHA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaCortadoFields::ID_MAQUINA) {
+            map[TareaCortadoFields::ID_MAQUINA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaCortadoFields::ID_BOBINA) {
+            map[TareaCortadoFields::ID_BOBINA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaCortadoFields::ID_MEDIDA_BOLSA) {
+            map[TareaCortadoFields::ID_MEDIDA_BOLSA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaCortadoFields::CANTIDAD) {
+            map[TareaCortadoFields::CANTIDAD].push_back(keyAndValue.mValue);
+        }
+    }
+
+    double totalCortes = 0;
+    for (size_t i = 0; i < map[TareaCortadoFields::FECHA].size(); ++i) {
+        htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(map[TareaCortadoFields::FECHA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaCortadoFields::ID_MAQUINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaCortadoFields::ID_BOBINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(getMedidaBobina(map[TareaCortadoFields::ID_BOBINA][i])));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(getMedidaBolsa(map[TareaCortadoFields::ID_MEDIDA_BOLSA][i])));
+        totalCortes += map[TareaCortadoFields::CANTIDAD][i].toDouble();
+        htmlString.append(QString("<td align = center valign = middle>%1</td></tr>\n").arg(map[TareaCortadoFields::CANTIDAD][i]));
+    }
+
+    htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg("TOTAL CORTES:"));
+    htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(QString::number(totalCortes)));
+
+    htmlString.append("</table>");
+
+    return htmlString;
+}
+
+Result<QString>
+ActividadPorEmpleadoOptions::buildTareaExtrusado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const
+{
+    QString htmlString;
+    htmlString.append("<h3 style='color: #2e6c80; text-align: center;'>Extrusado/Filmado</h3>");
+    htmlString.append("<table width = '100%'>");
+    htmlString.append("<u><thead><tr>");
+    htmlString.append("<th align = center valign = middle>Fecha</th>");
+    htmlString.append("<th align = center valign = middle>Máquina</th>");
+    htmlString.append("<th align = center valign = middle>ID_Bobina</th>");
+    htmlString.append("<th align = center valign = middle>Medida_Bobina (Ancho/Micron)</th>");
+    htmlString.append("<th align = center valign = middle>Kilos</th>");
+    htmlString.append("</tr></thead></u>");
+
+    // Data
+    std::vector<KeyAndValue> condition = {KeyAndValue(TareaExtrusadoFields::ID_OPERARIO, aUserId)};
+    if (mUi->checkBox_Maquina->isChecked()) {
+        QStringList list = mUi->comboBox_Maquina->currentText().split(" ");
+
+        if (list.first() != DataBaseData::TiposMaquinasStr[DataBaseData::TiposMaquinas::EXTRUSORA]) {
+            return QString();
+        }
+        Result<QString> maquinaResult = getCurrentMaquinaId(DataBaseData::TiposMaquinas::EXTRUSORA, list.back().toInt());
+        if (maquinaResult.status() == Status::FAILED) {
+            return maquinaResult;
+        }
+        condition.push_back(KeyAndValue(TareaExtrusadoFields::ID_MAQUINA, maquinaResult.value()));
+    }
+    Result<std::vector<KeyAndValue>> selectRes = selectBetweenDates(TableNames::TAREAS_EXTRUSADO,
+                                                                    "*",
+                                                                    condition,
+                                                                    FechaKeyAndValues(TareaExtrusadoFields::FECHA, aDesde, aHasta));
+    if(selectRes.status() == Status::FAILED) {
+        return Result<QString>(Status::FAILED, selectRes.error());
+    }
+    std::vector<KeyAndValue> data = selectRes.value();
+
+    MappedTable map;
+    for (KeyAndValue keyAndValue : data) {
+        if (keyAndValue.mKey == TareaExtrusadoFields::FECHA) {
+            map[TareaExtrusadoFields::FECHA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaExtrusadoFields::ID_MAQUINA) {
+            map[TareaExtrusadoFields::ID_MAQUINA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaExtrusadoFields::ID_BOBINA) {
+            map[TareaExtrusadoFields::ID_BOBINA].push_back(keyAndValue.mValue);
+        }
+    }
+
+    double totalKilos = 0;
+    for (size_t i = 0; i < map[TareaCortadoFields::FECHA].size(); ++i) {
+        htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(map[TareaExtrusadoFields::FECHA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaExtrusadoFields::ID_MAQUINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaExtrusadoFields::ID_BOBINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(getMedidaBobina(map[TareaExtrusadoFields::ID_BOBINA][i])));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(getKilosBobina(map[TareaExtrusadoFields::ID_BOBINA][i])));
+        totalKilos += getKilosBobina(map[TareaExtrusadoFields::ID_BOBINA][i]).toDouble();
+    }
+
+    htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg("TOTAL KILOS:"));
+    htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(QString::number(totalKilos)));
+
+    htmlString.append("</table>");
+
+    return htmlString;
+}
+
+Result<QString>
+ActividadPorEmpleadoOptions::buildTareaFiltrado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const
+{
+    QString htmlString;
+    htmlString.append("<h3 style='color: #2e6c80; text-align: center;'>Filtrado</h3>");
+    htmlString.append("<table width = '100%'>");
+    htmlString.append("<u><thead><tr>");
+    htmlString.append("<th align = center valign = middle>Fecha</th>");
+    htmlString.append("<th align = center valign = middle>Máquina</th>");
+    htmlString.append("<th align = center valign = middle>Kilos</th>");
+    htmlString.append("</tr></thead></u>");
+
+    // Data
+    std::vector<KeyAndValue> condition = {KeyAndValue(TareaFiltradoFields::ID_OPERARIO, aUserId)};
+    if (mUi->checkBox_Maquina->isChecked()) {
+        QStringList list = mUi->comboBox_Maquina->currentText().split(" ");
+
+        if (list.first() != DataBaseData::TiposMaquinasStr[DataBaseData::TiposMaquinas::FILTRADORA]) {
+            return QString();
+        }
+        Result<QString> maquinaResult = getCurrentMaquinaId(DataBaseData::TiposMaquinas::FILTRADORA, list.back().toInt());
+        if (maquinaResult.status() == Status::FAILED) {
+            return maquinaResult;
+        }
+        condition.push_back(KeyAndValue(TareaFiltradoFields::ID_MAQUINA, maquinaResult.value()));
+    }
+    Result<std::vector<KeyAndValue>> selectRes = selectBetweenDates(TableNames::TAREAS_FILTRADO,
+                                                                    "*",
+                                                                    condition,
+                                                                    FechaKeyAndValues(TareaFiltradoFields::FECHA, aDesde, aHasta));
+    if(selectRes.status() == Status::FAILED) {
+        return Result<QString>(Status::FAILED, selectRes.error());
+    }
+    std::vector<KeyAndValue> data = selectRes.value();
+
+    MappedTable map;
+    for (KeyAndValue keyAndValue : data) {
+        if (keyAndValue.mKey == TareaFiltradoFields::FECHA) {
+            map[TareaFiltradoFields::FECHA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaFiltradoFields::ID_MAQUINA) {
+            map[TareaFiltradoFields::ID_MAQUINA].push_back(keyAndValue.mValue);
+        }
+        if (keyAndValue.mKey == TareaFiltradoFields::KILOS) {
+            map[TareaFiltradoFields::KILOS].push_back(keyAndValue.mValue);
+        }
+    }
+
+    double totalKilos = 0;
+    for (size_t i = 0; i < map[TareaCortadoFields::FECHA].size(); ++i) {
+        htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(map[TareaFiltradoFields::FECHA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaFiltradoFields::ID_MAQUINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaFiltradoFields::KILOS][i]));
+        totalKilos += map[TareaFiltradoFields::KILOS][i].toDouble();
+    }
+
+    htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(""));
+    htmlString.append(QString("<td align = center valign = middle>%1</td>").arg("TOTAL KILOS:"));
+    htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(QString::number(totalKilos)));
+
+    htmlString.append("</table>");
 
     return htmlString;
 }
@@ -168,25 +420,32 @@ ActividadPorEmpleadoOptions::buildTareaLavado(const QString& aUserId, const QStr
                                                                     "*",
                                                                     condition,
                                                                     FechaKeyAndValues(TareaLavadoFields::FECHA, aDesde, aHasta));
-    //Result<std::vector<KeyAndValue>> selectRes = select(TableNames::TAREAS_LAVADO, "*", condition);
     if(selectRes.status() == Status::FAILED) {
         return Result<QString>(Status::FAILED, selectRes.error());
     }
     std::vector<KeyAndValue> data = selectRes.value();
 
-    double totalKilos = 0;
+    MappedTable map;
     for (KeyAndValue keyAndValue : data) {
         if (keyAndValue.mKey == TareaLavadoFields::FECHA) {
-            htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(keyAndValue.mValue));
+            map[TareaLavadoFields::FECHA].push_back(keyAndValue.mValue);
         }
         if (keyAndValue.mKey == TareaLavadoFields::ID_MAQUINA) {
-            htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(keyAndValue.mValue));
+            map[TareaLavadoFields::ID_MAQUINA].push_back(keyAndValue.mValue);
         }
         if (keyAndValue.mKey == TareaLavadoFields::KILOS) {
-            totalKilos += keyAndValue.mValue.toDouble();
-            htmlString.append(QString("<td align = center valign = middle>%1</td></tr>\n").arg(keyAndValue.mValue));
+            map[TareaLavadoFields::KILOS].push_back(keyAndValue.mValue);
         }
     }
+
+    double totalKilos = 0;
+    for (size_t i = 0; i < map[TareaCortadoFields::FECHA].size(); ++i) {
+        htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(map[TareaLavadoFields::FECHA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaLavadoFields::ID_MAQUINA][i]));
+        htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(map[TareaLavadoFields::KILOS][i]));
+        totalKilos += map[TareaLavadoFields::KILOS][i].toDouble();
+    }
+
     htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(""));
     htmlString.append(QString("<td align = center valign = middle>%1</td>").arg("TOTAL KILOS:"));
     htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(QString::number(totalKilos)));
@@ -194,6 +453,82 @@ ActividadPorEmpleadoOptions::buildTareaLavado(const QString& aUserId, const QStr
 
     return htmlString;
 }
+
+Result<QString>
+ActividadPorEmpleadoOptions::buildTareaRebobinado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const
+{
+    QString htmlString;
+    htmlString.append("<h3 style='color: #2e6c80; text-align: center;'>Rebobinado</h3>");
+
+    for (int i = 0; i < DataBaseData::ProductosRebobinadoStr.size(); ++i) {
+        htmlString.append(QString("<p style='text-align: center;'><strong>%1</strong></p>").arg(DataBaseData::ProductosRebobinadoStr[i]));
+        htmlString.append("<table width = '100%'>");
+        htmlString.append("<u><thead><tr>");
+        htmlString.append("<th align = center valign = middle>Fecha</th>");
+        htmlString.append("<th align = center valign = middle>Máquina</th>");
+        htmlString.append("<th align = center valign = middle>Kilos</th>");
+        htmlString.append("</tr></thead></u>");
+
+        // Data
+        std::vector<KeyAndValue> condition = {KeyAndValue(TareaRebobinadoFields::ID_OPERARIO, aUserId),
+                                              KeyAndValue(TareaRebobinadoFields::ID_PRODUCTO_REBOBINADO, getProductoRebobinadoId(DataBaseData::ProductosRebobinadoStr[i]))};
+
+        if (mUi->checkBox_Maquina->isChecked()) {
+            QStringList list = mUi->comboBox_Maquina->currentText().split(" ");
+
+            if (list.first() != DataBaseData::TiposMaquinasStr[DataBaseData::TiposMaquinas::REBOBINADORA]) {
+                return QString();
+            }
+            Result<std::vector<KeyAndValue>> result = select(TableNames::MAQUINAS,
+                                                             MaquinasFields::ID,
+                                                             {KeyAndValue(MaquinasFields::TIPO, QString::number(DataBaseData::TiposMaquinas::REBOBINADORA)),
+                                                              KeyAndValue(MaquinasFields::NUMERO, list.back())});
+            if (result.status() == Status::FAILED) {
+                return Result<QString>(Status::FAILED, result.error());
+            }
+            if (result.value().size() > 1) {
+                return Result<QString>(Status::FAILED, "Error buscando ID de Máquina.");
+            }
+            condition.push_back(KeyAndValue(TareaRebobinadoFields::ID_MAQUINA, result.value().back().mValue));
+        }
+        Result<std::vector<KeyAndValue>> selectRes = selectBetweenDates(TableNames::TAREAS_REBOBINADO,
+                                                                        "*",
+                                                                        condition,
+                                                                        FechaKeyAndValues(TareaRebobinadoFields::FECHA, aDesde, aHasta));
+        if(selectRes.status() == Status::FAILED) {
+            return Result<QString>(Status::FAILED, selectRes.error());
+        }
+        std::vector<KeyAndValue> data = selectRes.value();
+
+        MappedTable map;
+        for (KeyAndValue keyAndValue : data) {
+            if (keyAndValue.mKey == TareaRebobinadoFields::FECHA) {
+                map[TareaRebobinadoFields::FECHA].push_back(keyAndValue.mValue);
+            }
+            if (keyAndValue.mKey == TareaRebobinadoFields::ID_MAQUINA) {
+                map[TareaRebobinadoFields::ID_MAQUINA].push_back(keyAndValue.mValue);
+            }
+            if (keyAndValue.mKey == TareaRebobinadoFields::KILOS) {
+                map[TareaRebobinadoFields::KILOS].push_back(keyAndValue.mValue);
+            }
+        }
+
+        double totalKilos = 0;
+        for (size_t i = 0; i < map[TareaRebobinadoFields::FECHA].size(); ++i) {
+            htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(map[TareaRebobinadoFields::FECHA][i]));
+            htmlString.append(QString("<td align = center valign = middle>%1</td>").arg(map[TareaRebobinadoFields::ID_MAQUINA][i]));
+            htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(map[TareaRebobinadoFields::KILOS][i]));
+            totalKilos += map[TareaRebobinadoFields::KILOS][i].toDouble();
+        }
+
+        htmlString.append(QString("<tr><td align = center valign = middle>%1</td>").arg(""));
+        htmlString.append(QString("<td align = center valign = middle>%1</td>").arg("TOTAL KILOS:"));
+        htmlString.append(QString("<td align = center valign = middle>%1</td></tr>").arg(QString::number(totalKilos)));
+        htmlString.append("</table>");
+    }
+    return htmlString;
+}
+
 void
 ActividadPorEmpleadoOptions::on_tableView_clicked(const QModelIndex &aIndex)
 {

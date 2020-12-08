@@ -1,10 +1,16 @@
 #include "Admin.h"
 #include "ui_Admin.h"
 
+#include <QScreen>
+#include <QPrintPreviewWidget>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintPreviewDialog>
+#include <QTextDocument>
+#include <QToolBar>
+
 #include "ActividadPorEmpleadoOptions.h"
 #include "DataBaseUtils.h"
 #include "NotificationSender.h"
-#include "PrintPreview.h"
 #include "TrazabilidadPorBobinaOptions.h"
 
 using namespace DataBaseUtils;
@@ -19,7 +25,21 @@ Admin::Admin(NotificationSender* aNotificationSender, QWidget *parent) :
     mActividadPorEmpleadoOptions = new ActividadPorEmpleadoOptions(mNotificationSender, mUi->widgetAvailableOptions);
     mTrazabilidadPorBobinaOptions = new TrazabilidadPorBobinaOptions(mUi->widgetAvailableOptions);
 
-    mPrintPreview = new PrintPreview();
+    mQTextBrowser = new QTextDocument();
+    mQPrinter = new QPrinter(QPrinter::ScreenResolution);
+    mQPrinter->setFullPage(true);
+    mQPrinter->setPaperSize(QPrinter::A4);
+    mQPrinter->setOrientation(QPrinter::Portrait);
+
+    mQPrintPreviewDialog = new QPrintPreviewDialog(mQPrinter, this);
+    mQPrintPreviewDialog->setWindowFlag(Qt::Window);
+    mQPrintPreviewDialog->setWindowTitle("Vista Previa de Impresión");
+    QList<QPrintPreviewWidget*> list = mQPrintPreviewDialog->findChildren<QPrintPreviewWidget*>();
+    if(!list.isEmpty()) {
+      list.first()->setZoomMode(QPrintPreviewWidget::FitToWidth);
+    }
+
+    connect(mQPrintPreviewDialog, SIGNAL(paintRequested(QPrinter *)), SLOT(printPreview(QPrinter *)));
 
     hideOptions();
 }
@@ -32,8 +52,6 @@ Admin::~Admin()
 void
 Admin::hideOptions()
 {
-    mPrintPreview->hide();
-
     mActividadPorEmpleadoOptions->hide();
     mTrazabilidadPorBobinaOptions->hide();
 
@@ -70,6 +88,15 @@ Admin::on_pushButton_GenerarReporte_pressed()
             return;
         }
         htmlTable = res.value();
+    } else if (mTrazabilidadPorBobinaOptions->isVisible()) {
+        Result<QString> res = mTrazabilidadPorBobinaOptions->getHTMLTable();
+        if (res.status() == Status::FAILED) {
+            mNotificationSender->emitShowError(res.error());
+            return;
+        }
+        htmlTable = res.value();
+    } else if (/*mProduccionPorMaquinaOptions->isVisible()*/false) {
+
     }
     QString fullHtmlCode = "<html><meta charset='utf-8'><body>";
 
@@ -85,7 +112,24 @@ Admin::on_pushButton_GenerarReporte_pressed()
 
     fullHtmlCode.append("</body></html>");
 
-    mPrintPreview->setText(fullHtmlCode);
-    mPrintPreview->show();
+    mQTextBrowser->setHtml(fullHtmlCode);
+
+    const int squareSize = QGuiApplication::primaryScreen()->availableGeometry().height() - 150;
+    mQPrintPreviewDialog->resize(squareSize, squareSize);
+
+    QList<QPrintPreviewWidget*> list = mQPrintPreviewDialog->findChildren<QPrintPreviewWidget*>();
+    if(!list.isEmpty()) {
+      list.first()->hide();
+      list.first()->updatePreview();
+      list.first()->show();
+    }
+
+    mQPrintPreviewDialog->exec();
+
     mNotificationSender->emitShowWarning(mNotificationSender->WARN_ADMIN_USER_LOGGED);
+}
+
+void Admin::printPreview(QPrinter *printer)
+{
+    mQTextBrowser->print(printer);
 }

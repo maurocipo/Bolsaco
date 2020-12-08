@@ -4,6 +4,7 @@
 #include <QDate>
 #include <QString>
 #include <sstream>
+#include <map>
 #include <vector>
 
 #include "Result.h"
@@ -11,6 +12,8 @@
 namespace DataBaseUtils
 {
     extern const char* dateFormat;
+
+    using MappedTable = std::map<QString, std::vector<QString>>;
 
     struct TableNames
     {
@@ -203,10 +206,25 @@ namespace DataBaseUtils
     getGratestBobinaId();
 
     Result<QString>
-    getCurrentUserId(const int aCurrentUser);
+    getCurrentUserId(const int aCurrentUserDNI);
+    Result<QString>
+    getCurrentUserName(const QString& aCurrentUserDNI);
+    Result<QString>
+    getCurrentUserDNI(const QString& aCurrentUserId);
 
     Result<QString>
     getCurrentMaquinaId(const int aTipoDeMaquina, const int aNumeroDeMaquina);
+
+    QString
+    getMedidaBobina(const QString& aBobinaId);
+    QString
+    getKilosBobina(const QString& aBobinaId);
+
+    QString
+    getMedidaBolsa(const QString& aMedidaBolsaId);
+
+    QString
+    getProductoRebobinadoId(const QString& aDescripcion);
 
 };
 #endif // DATABASEUTILS_H

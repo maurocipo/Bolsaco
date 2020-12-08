@@ -210,8 +210,17 @@ DataBaseUtils::buildSelectQuery(const QString& aTable, const QString& aColumn, c
     queryStr.append("SELECT " + aColumn + " FROM " + aTable + " WHERE ");
 
     if (aConditions.empty() == false) {
+        QStringList keys;
         for(const KeyAndValue& keyAndValue : aConditions) {
-            queryStr.append(keyAndValue.mKey + " = '" + keyAndValue.mValue + "' AND ");
+            keys.append(keyAndValue.mKey);
+        }
+        for(const KeyAndValue& keyAndValue : aConditions) {
+            keys.pop_front();
+            if (keys.contains(keyAndValue.mKey)) {
+                queryStr.append(keyAndValue.mKey + " = '" + keyAndValue.mValue + "' OR  ");
+            } else {
+                queryStr.append(keyAndValue.mKey + " = '" + keyAndValue.mValue + "' AND ");
+            }
         }
         queryStr.chop(5);
     } else {
@@ -230,9 +239,14 @@ Result<std::vector<DataBaseUtils::KeyAndValue>>
 DataBaseUtils::selectBetweenDates(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions, const FechaKeyAndValues& aDates)
 {
     QString query = buildSelectQuery(aTable, aColumn, aConditions);
-    QString desde = aDates.mDesde;//QDate::fromString(aDates.mDesde, dateFormat).toString("yyyy-MM-dd");
-    QString hasta = aDates.mHasta;//QDate::fromString(aDates.mHasta, dateFormat).toString("yyyy-MM-dd");
-    query.append(" AND (").append(aDates.mKey).append(" BETWEEN '" + desde + "' AND '" + hasta + "')");
+    QString desde = aDates.mDesde;
+    QString hasta = aDates.mHasta;
+    if (aConditions.empty()) {
+        query.append(" WHERE (");
+    } else {
+        query.append(" AND (");
+    }
+    query.append(aDates.mKey).append(" BETWEEN '" + desde + "' AND '" + hasta + "')");
 
     return internalSelect(aTable, query);
 }
@@ -365,7 +379,7 @@ DataBaseUtils::internalSelect(const QString& aTable, const QString& aSelectQuery
            if (idProductoIndex >= 0) returnData.emplace_back(KeyAndValue(TareaRebobinadoFields::ID_PRODUCTO_REBOBINADO, query.value(idProductoIndex).toString()));
            if (idMaquinaIndex >= 0) returnData.emplace_back(KeyAndValue(TareaRebobinadoFields::ID_MAQUINA, query.value(idMaquinaIndex).toString()));
            if (idOperarioIndex >= 0) returnData.emplace_back(KeyAndValue(TareaRebobinadoFields::ID_OPERARIO, query.value(idOperarioIndex).toString()));
-           if (kilosIndex >= 0) returnData.emplace_back(KeyAndValue(TareaRebobinadoFields::KILOS, query.value(idOperarioIndex).toString()));
+           if (kilosIndex >= 0) returnData.emplace_back(KeyAndValue(TareaRebobinadoFields::KILOS, query.value(kilosIndex).toString()));
         }
     } else if (aTable == TableNames::TIPOS_MAQUINAS) {
         const int idIndex = query.record().indexOf(TiposMaquinasFields::ID);
@@ -496,15 +510,14 @@ DataBaseUtils::getGratestBobinaId()
 }
 
 Result<QString>
-DataBaseUtils::getCurrentUserId(const int aCurrentUser)
+DataBaseUtils::getCurrentUserId(const int aCurrentUserDNI)
 {
-    // Get mCurrentUser id
     if (exists(TableNames::OPERARIOS,
-                              KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUser))) == false) {
+               KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUserDNI))) == false) {
         return Result<QString>(Status::FAILED, "El operario no existe en la base de datos.");
     }
 
-    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUser))};
+    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::DNI, QString::number(aCurrentUserDNI))};
     Result<std::vector<KeyAndValue>> result = select(TableNames::OPERARIOS, OperariosFields::ID, conditions);
     if (result.status() != Status::SUCCEEDED) {
         return Result<QString>(Status::FAILED, result.error());
@@ -516,9 +529,46 @@ DataBaseUtils::getCurrentUserId(const int aCurrentUser)
 }
 
 Result<QString>
+DataBaseUtils::getCurrentUserDNI(const QString& aCurrentUserId)
+{
+    if (exists(TableNames::OPERARIOS,
+               KeyAndValue(OperariosFields::ID, aCurrentUserId)) == false) {
+        return Result<QString>(Status::FAILED, "El operario no existe en la base de datos.");
+    }
+
+    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::ID, aCurrentUserId)};
+    Result<std::vector<KeyAndValue>> result = select(TableNames::OPERARIOS, OperariosFields::DNI, conditions);
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<QString>(Status::FAILED, result.error());
+    }
+    if (result.value().size() != 1) {
+        return Result<QString>(Status::FAILED, "Error buscando DNI de Operario. Posible ID incorrecto?");
+    }
+    return result.value().begin()->mValue;
+}
+
+Result<QString>
+DataBaseUtils::getCurrentUserName(const QString& aCurrentUserDNI)
+{
+    if (exists(TableNames::OPERARIOS,
+               KeyAndValue(OperariosFields::DNI, aCurrentUserDNI)) == false) {
+        return Result<QString>(Status::FAILED, "El operario no existe en la base de datos.");
+    }
+
+    std::vector<KeyAndValue> conditions = {KeyAndValue(OperariosFields::DNI, aCurrentUserDNI)};
+    Result<std::vector<KeyAndValue>> result = select(TableNames::OPERARIOS, OperariosFields::NOMBRE_COMPLETO, conditions);
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<QString>(Status::FAILED, result.error());
+    }
+    if (result.value().size() != 1) {
+        return Result<QString>(Status::FAILED, "Error buscando Nombre de Operario. Posible DNI duplicado?");
+    }
+    return result.value().begin()->mValue;
+}
+
+Result<QString>
 DataBaseUtils::getCurrentMaquinaId(const int aTipoDeMaquina, const int aNumeroDeMaquina)
 {
-
     if (aNumeroDeMaquina == 0) {
         return Result<QString>(Status::FAILED, "Numero de Maquina no seleccionado.");
     }
@@ -531,5 +581,39 @@ DataBaseUtils::getCurrentMaquinaId(const int aTipoDeMaquina, const int aNumeroDe
     if (selectResult.value().size() != 1) {
         return Result<QString>(Status::FAILED, "Error buscando ID de Maquina. Posible Maquina duplicada?");
     }
+    return selectResult.value().begin()->mValue;
+}
+
+QString
+DataBaseUtils::getMedidaBobina(const QString& aBobinaId)
+{
+    QString ancho_micron;
+    Result<std::vector<KeyAndValue>> selectResult = select(TableNames::BOBINAS, BobinasFields::MEDIDA, {KeyAndValue(BobinasFields::ID, aBobinaId)});
+    const QString idMedida = selectResult.value().begin()->mValue;
+    selectResult = select(TableNames::MEDIDAS_BOBINAS, MedidasBobinasFields::ANCHO, {KeyAndValue(MedidasBobinasFields::ID, idMedida)});
+    ancho_micron.append(selectResult.value().begin()->mValue).append("/");
+    selectResult = select(TableNames::MEDIDAS_BOBINAS, MedidasBobinasFields::MICRONAJE, {KeyAndValue(MedidasBobinasFields::ID, idMedida)});
+    ancho_micron.append(selectResult.value().begin()->mValue);
+    return ancho_micron;
+}
+
+QString
+DataBaseUtils::getKilosBobina(const QString& aBobinaId)
+{
+    Result<std::vector<KeyAndValue>> selectResult = select(TableNames::BOBINAS, BobinasFields::PESO, {KeyAndValue(BobinasFields::ID, aBobinaId)});
+    return selectResult.value().back().mValue;
+}
+
+QString
+DataBaseUtils::getMedidaBolsa(const QString& aMedidaBolsaId)
+{
+    Result<std::vector<KeyAndValue>> selectResult = select(TableNames::MEDIDAS_BOLSAS, MedidasBolsasFields::LARGO, {KeyAndValue(MedidasBolsasFields::ID, aMedidaBolsaId)});
+    return selectResult.value().begin()->mValue;
+}
+
+QString
+DataBaseUtils::getProductoRebobinadoId(const QString& aDescripcion)
+{
+    Result<std::vector<KeyAndValue>> selectResult = select(TableNames::PRODUCTOS_REBOBINADO, ProductosRebobinadoFields::ID, {KeyAndValue(ProductosRebobinadoFields::DESCRIPCION, aDescripcion)});
     return selectResult.value().begin()->mValue;
 }

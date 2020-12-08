@@ -1,5 +1,6 @@
 QT       += core gui
 QT       += core gui sql
+QT       += printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +21,6 @@ SOURCES += \
     InicioSesion.cpp \
     Lavadora.cpp \
     NotificationSender.cpp \
-    PrintPreview.cpp \
     ProduccionPorMaquinaOptions.cpp \
     Rebobinadora.cpp \
     SimpleCrypt.cpp \
@@ -40,7 +40,6 @@ HEADERS += \
     InicioSesion.h \
     Lavadora.h \
     NotificationSender.h \
-    PrintPreview.h \
     ProduccionPorMaquinaOptions.h \
     Rebobinadora.h \
     Result.h \
@@ -57,7 +56,6 @@ FORMS += \
     Filtradora.ui \
     InicioSesion.ui \
     Lavadora.ui \
-    PrintPreview.ui \
     ProduccionPorMaquinaOptions.ui \
     Rebobinadora.ui \
     TrazabilidadPorBobinaOptions.ui \

@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "Result.h"
+
 namespace Ui {
 class ProduccionPorMaquinaOptions;
 }
@@ -15,8 +17,13 @@ public:
     explicit ProduccionPorMaquinaOptions(QWidget *parent = nullptr);
     ~ProduccionPorMaquinaOptions();
 
+    Result<QString>
+    getHTMLTable();
+
 private:
-    Ui::ProduccionPorMaquinaOptions *ui;
+    void fillComboboxMaquina();
+
+    Ui::ProduccionPorMaquinaOptions *mUi;
 };
 
 #endif // PRODUCCIONPORMAQUINAOPTIONS_H

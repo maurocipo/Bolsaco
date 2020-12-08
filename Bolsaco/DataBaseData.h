@@ -65,7 +65,6 @@ Operarios {
 // This enum matches with CantidadMaquinas array.
 enum TiposMaquinas
 {
-    INVALID = -1,
     CORTADORA,
     EXTRUSORA,
     FILTRADORA,

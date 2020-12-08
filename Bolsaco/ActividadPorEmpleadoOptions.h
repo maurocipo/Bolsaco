@@ -39,7 +39,11 @@ private slots:
     void on_comboBox_Tarea_currentIndexChanged(int index);
 
 private:
+    Result<QString> buildTareaCortado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const;
+    Result<QString> buildTareaExtrusado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const;
+    Result<QString> buildTareaFiltrado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const;
     Result<QString> buildTareaLavado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const;
+    Result<QString> buildTareaRebobinado(const QString& aUserId, const QString& aDesde, const QString& aHasta) const;
 
     void fillComboboxMaquina();
     void fillComboboxTarea();
