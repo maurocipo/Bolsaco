@@ -18,6 +18,9 @@ ActividadPorEmpleadoOptions::ActividadPorEmpleadoOptions(NotificationSender* aNo
 {
     mUi->setupUi(this);
 
+    mUi->lineEdit_DNI->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), mUi->lineEdit_DNI));
+    mUi->lineEdit_Nombre->setValidator(new QRegExpValidator(QRegExp("[a-zA-Z]*") , mUi->lineEdit_Nombre));
+
     mUi->checkBox_FechaDesde->setChecked(false);
     mUi->dateTimeEdit_Desde->setDate(QDate::currentDate());
     mUi->dateTimeEdit_Desde->setEnabled(false);
@@ -576,7 +579,8 @@ ActividadPorEmpleadoOptions::on_checkBox_Maquina_stateChanged(int arg1)
     }
 }
 
-void ActividadPorEmpleadoOptions::on_lineEdit_DNI_textChanged(const QString &arg1)
+void
+ActividadPorEmpleadoOptions::on_lineEdit_DNI_textChanged(const QString &arg1)
 {
     QString query("SELECT ");
     query.append(OperariosFields::DNI).append(",").append(OperariosFields::NOMBRE_COMPLETO).append(" FROM ");
@@ -585,7 +589,8 @@ void ActividadPorEmpleadoOptions::on_lineEdit_DNI_textChanged(const QString &arg
     static_cast<QSqlQueryModel*>(mUi->tableView->model())->setQuery(query);
 }
 
-void ActividadPorEmpleadoOptions::on_lineEdit_Nombre_textChanged(const QString &arg1)
+void
+ActividadPorEmpleadoOptions::on_lineEdit_Nombre_textChanged(const QString &arg1)
 {
     QString query("SELECT ");
     query.append(OperariosFields::DNI).append(",").append(OperariosFields::NOMBRE_COMPLETO).append(" FROM ");
@@ -594,7 +599,8 @@ void ActividadPorEmpleadoOptions::on_lineEdit_Nombre_textChanged(const QString &
     static_cast<QSqlQueryModel*>(mUi->tableView->model())->setQuery(query);
 }
 
-void ActividadPorEmpleadoOptions::on_comboBox_Tarea_currentIndexChanged(int /*index*/)
+void
+ActividadPorEmpleadoOptions::on_comboBox_Tarea_currentIndexChanged(int /*index*/)
 {
     fillComboboxMaquina();
 }

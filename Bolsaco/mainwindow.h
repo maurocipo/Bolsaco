@@ -18,11 +18,13 @@ class NotificationSender;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *aParent = nullptr);
     ~MainWindow();
 
+public slots:
+    void on_timerTimeout();
+    
 private slots:
     void on_operarioLogin();
     void on_administratorLogin();
@@ -35,45 +37,17 @@ private slots:
     void on_statusBarFadeOutFinished();
     void on_statusBarFadeInFinished();
 
-/*    void on_pushButtonHome_clicked();
-
-    void on_pushButtonHome_pressed();
-
-    void on_pushButtonHome_released();
-
-    void on_pushButtonHome_Ingreso_clicked();
-
-    void on_pushButtonHome_Ingreso_pressed();
-
-    void on_pushButtonHome_Ingreso_released();
-
-    void on_pushButtonHome_Entrega_pressed();
-
-    void on_pushButtonHome_Entrega_released();
-
-    void on_pushButtonHome_LibroPoli_pressed();
-
-    void on_pushButtonHome_LibroPoli_released();
-
-    void on_pushButtonHome_Inventario_pressed();
-
-    void on_pushButtonHome_Inventario_released();
-
-    void on_pushButtonHome_Entrega_clicked();
-
-    void on_pushButtonHome_LibroPoli_clicked();
-
-    void on_pushButtonHome_Inventario_clicked();
-*/
-
     void on_pushButton_CerrarSesion_clicked();
+
+protected:
+    //void resizeEvent(QResizeEvent *event);
 
 private:
 
     void hideViews();
     void setupDataBase();
     bool setUser();
-//    void setupHome();
+
 
     // Views
     Admin* mAdmin;
@@ -83,6 +57,8 @@ private:
     unsigned int mFadeCycles;
     QPropertyAnimation* mStatusBarFadeInAnimation;
     QPropertyAnimation* mStatusBarFadeOutAnimation;
+
+    QTimer* mTimer;
 
     NotificationSender* mNotificationSender;
     QSqlDatabase mDb;

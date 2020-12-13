@@ -23,10 +23,15 @@ CargaTareas::CargaTareas(NotificationSender* aNotificationSender, QWidget *paren
 
     // Create Maquinas Windows
     mCortadora = new Cortadora(mUi->widget);
+    mUi->widget->layout()->addWidget(mCortadora);
     mExtrusora = new Extrusora(mUi->widget);
+    mUi->widget->layout()->addWidget(mExtrusora);
     mFiltradora = new Filtradora(mUi->widget);
+    mUi->widget->layout()->addWidget(mFiltradora);
     mLavadora = new Lavadora(mUi->widget);
+    mUi->widget->layout()->addWidget(mLavadora);
     mRebobinadora = new Rebobinadora(mUi->widget);
+    mUi->widget->layout()->addWidget(mRebobinadora);
 
     // Fill comboboxes
     mUi->comboBox_tipoDeMaquina->addItems(DataBaseData::TiposMaquinasStr);
@@ -109,16 +114,17 @@ CargaTareas::hideMaquinas() const
 void
 CargaTareas::on_pushButton_guardar_pressed()
 {
-    /*
-     * Tarea fields:
-     * "Id           int     NOT NULL ,"
-       "DNI_Operador int     NOT NULL ,"
-       "Id_Bobina    int              ,"
-       "Id_Bolsa     int              ,"
-       "Id_Maquina   int     NOT NULL ,"
-       "Fecha        date    NOT NULL ,"
-       "Resultado    string  NOT NULL ,"
-    */
+    // Check Date
+    Result<QDateTime> dateResult = getStoredDate();
+    if (dateResult.status() != Status::SUCCEEDED) {
+        mNotificationSender->emitShowError(dateResult.error());
+        return;
+    }
+    if (QDateTime::currentDateTime() < dateResult.value()) {
+        mNotificationSender->emitShowError("Fecha Inválida. Llame al supervisor.");
+        return;
+    }
+
     Result<QString> stringResult = getCurrentUserId(mCurrentUser);
     if (stringResult.status() != Status::SUCCEEDED) {
         if (stringResult.status() != Status::FAILED) {
@@ -199,6 +205,8 @@ CargaTareas::on_pushButton_guardar_pressed()
         }
     }
     mNotificationSender->emitShowInfo("Tarea/s cargada/s correctamente.");
+
+    DataBaseUtils::update(TableNames::DATE, {KeyAndValue(DateFields::ID, "0")}, {KeyAndValue(DateFields::DATE, QDateTime::currentDateTime().toString(dateFormat))});
 }
 
 QStringList

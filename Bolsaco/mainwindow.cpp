@@ -1,13 +1,16 @@
 #include "mainwindow.h"
 
+#include <QDebug>
 #include <QFile>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <QResizeEvent>
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QTextStream>
+#include <QTimer>
 
 #include <iostream> // USED TO DEV. SHOULD BE GONE
 
@@ -32,9 +35,9 @@ MainWindow::MainWindow(QWidget *aParent)
     // Remove resize little arrow down-right corner.
     mUi->statusbar->setSizeGripEnabled(false);
 
+    // Setup fade-in effect for status bar
     QGraphicsOpacityEffect* eff = new QGraphicsOpacityEffect(this);
     mUi->statusbar->setGraphicsEffect(eff);
-
     mStatusBarFadeOutAnimation = new QPropertyAnimation(eff, "opacity");
     connect(mStatusBarFadeOutAnimation, SIGNAL(finished()), this, SLOT(on_statusBarFadeOutFinished()));
     mStatusBarFadeOutAnimation->setDuration(350);
@@ -42,6 +45,7 @@ MainWindow::MainWindow(QWidget *aParent)
     mStatusBarFadeOutAnimation->setEndValue(0);
     mStatusBarFadeOutAnimation->setEasingCurve(QEasingCurve::InQuad);
 
+    // Setup fade-out effect for status bar
     mStatusBarFadeInAnimation = new QPropertyAnimation(eff, "opacity");
     connect(mStatusBarFadeOutAnimation, SIGNAL(finished()), this, SLOT(on_statusBarFadeInFinished()));
     mStatusBarFadeInAnimation->setDuration(350);
@@ -49,18 +53,22 @@ MainWindow::MainWindow(QWidget *aParent)
     mStatusBarFadeInAnimation->setEndValue(1);
     mStatusBarFadeInAnimation->setEasingCurve(QEasingCurve::OutQuad);
 
-
     setupDataBase();
 
     mNotificationSender = new NotificationSender();
 
     mAdmin = new Admin(mNotificationSender, mUi->showWidget);
     mAdmin->hide();
+    mUi->showWidget->layout()->addWidget(mAdmin);
 
     mCargaTareas = new CargaTareas(mNotificationSender, mUi->showWidget);
     mCargaTareas->hide();
+    mUi->showWidget->layout()->addWidget(mCargaTareas);
 
     mInicioSesion = new InicioSesion(mNotificationSender, mUi->showWidget);
+    mUi->showWidget->layout()->addWidget(mInicioSesion);
+
+    mTimer = new QTimer(this);
 
     connect(mInicioSesion, SIGNAL(operarioLogin()), this, SLOT(on_operarioLogin()));
     connect(mInicioSesion, SIGNAL(administratorLogin()), this, SLOT(on_administratorLogin()));
@@ -68,6 +76,9 @@ MainWindow::MainWindow(QWidget *aParent)
     connect(mNotificationSender, SIGNAL(showWarning(QString)), this, SLOT(on_showWarning(const QString&)));
     connect(mNotificationSender, SIGNAL(showInfo(QString)), this, SLOT(on_showInfo(const QString&)));
     connect(mNotificationSender, SIGNAL(clearStatusBar()), this, SLOT(on_clearStatusBar()));
+    connect(mTimer, SIGNAL(timeout()), this, SLOT(on_timerTimeout()));
+
+    mTimer->start(DataBaseData::backupInterval);
 }
 
 MainWindow::~MainWindow()
@@ -87,7 +98,11 @@ void
 MainWindow::hideViews()
 {
     mAdmin->hide();
+    mAdmin->hideOptions();
+
     mCargaTareas->hide();
+    mCargaTareas->hideMaquinas();
+
     mInicioSesion->hide();
 
     mUi->pushButton_CerrarSesion->hide();
@@ -112,6 +127,7 @@ MainWindow::setupDataBase()
 
     // Check database health. Tables that should exist:
     // DataBaseUtils::TableNames::BOBINAS
+    // DataBaseUtils::TableNames::DATE
     // DataBaseUtils::TableNames::MAQUINAS
     // DataBaseUtils::TableNames::MEDIDAS_BOBINAS
     // DataBaseUtils::TableNames::MEDIDAS_BOLSAS
@@ -123,7 +139,10 @@ MainWindow::setupDataBase()
     // DataBaseUtils::TableNames::TAREAS_LAVADO
     // DataBaseUtils::TableNames::TAREAS_REBOBINADO
     // DataBaseUtils::TableNames::TIPOS_MAQUINAS
+    // DataBaseUtils::TableNames::VERSION
     QStringList tables = mDb.tables();
+
+    // DataBaseUtils::TableNames::BOBINAS
     if (tables.contains(TableNames::BOBINAS) == false) {
         QSqlQuery query(CreationCommands::createBobinas);
         if(query.isActive() == false) {
@@ -132,6 +151,21 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::DATE
+    if (tables.contains(TableNames::DATE) == false) {
+        QSqlQuery query(CreationCommands::createDate);
+        if(query.isActive() == false) {
+            on_showError(query.lastError().text());
+            return;
+        }
+        Result<void> res = DataBaseUtils::insert(TableNames::DATE, {KeyAndValue(DateFields::DATE, QDateTime::currentDateTime().toString(dateFormat))});
+        if (res.status() != Status::SUCCEEDED) {
+            on_showError("Error cargando tabla DATE: " + res.error());
+            return;
+        }
+    }
+
+    // DataBaseUtils::TableNames::MAQUINAS
     if (tables.contains(TableNames::MAQUINAS) == false) {
         QSqlQuery query(CreationCommands::createMaquinas);
         if(query.isActive() == false) {
@@ -157,6 +191,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::MEDIDAS_BOBINAS
     if (tables.contains(TableNames::MEDIDAS_BOBINAS) == false) {
         QSqlQuery query(CreationCommands::createMedidasBobinas);
         if(query.isActive() == false) {
@@ -184,6 +219,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::MEDIDAS_BOLSAS
     if (tables.contains(TableNames::MEDIDAS_BOLSAS) == false) {
         QSqlQuery query(CreationCommands::createMedidasBolsas);
         if(query.isActive() == false) {
@@ -192,8 +228,7 @@ MainWindow::setupDataBase()
         }
 
         for (int i = 0; i < DataBaseData::MedidasLargoBolsas.size(); ++i) {
-            KeyAndValue medida(MedidasBolsasFields::LARGO, DataBaseData::MedidasLargoBolsas[i]);
-            Result<void> res = DataBaseUtils::insert(TableNames::MEDIDAS_BOLSAS, medida);
+            Result<void> res = DataBaseUtils::insert(TableNames::MEDIDAS_BOLSAS, {KeyAndValue(MedidasBolsasFields::LARGO, DataBaseData::MedidasLargoBolsas[i])});
             if (res.status() != Status::SUCCEEDED) {
                 on_showError("Error cargando tabla MEDIDAS_BOLSAS: " + res.error());
                 return;
@@ -205,6 +240,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::OPERARIOS
     if (tables.contains(TableNames::OPERARIOS) == false) {
         QSqlQuery query(CreationCommands::createOperarios);
         if(query.isActive() == false) {
@@ -228,6 +264,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::PRODUCTOS_REBOBINADO
     if (tables.contains(TableNames::PRODUCTOS_REBOBINADO) == false) {
         QSqlQuery query(CreationCommands::createProductosRebobinado);
         if(query.isActive() == false) {
@@ -236,7 +273,7 @@ MainWindow::setupDataBase()
         }
         for (int i = 0; i < DataBaseData::ProductosRebobinadoStr.size(); ++i) {
             Result<void> res = DataBaseUtils::insert(TableNames::PRODUCTOS_REBOBINADO,
-                                                     KeyAndValue(ProductosRebobinadoFields::DESCRIPCION, DataBaseData::ProductosRebobinadoStr[i]));
+                                                     {KeyAndValue(ProductosRebobinadoFields::DESCRIPCION, DataBaseData::ProductosRebobinadoStr[i])});
             if (res.status() != Status::SUCCEEDED) {
                 on_showError("Error cargando tabla PRODUCTOS_REBOBINADO: " + res.error());
                 return;
@@ -248,6 +285,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TAREAS_CORTADO
     if (tables.contains(TableNames::TAREAS_CORTADO) == false) {
         QSqlQuery query(CreationCommands::createTareasCortado);
         if(query.isActive() == false) {
@@ -256,6 +294,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TAREAS_EXTRUSADO
     if (tables.contains(TableNames::TAREAS_EXTRUSADO) == false) {
         QSqlQuery query(CreationCommands::createTareasExtrusado);
         if(query.isActive() == false) {
@@ -264,6 +303,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TAREAS_FILTRADO
     if (tables.contains(TableNames::TAREAS_FILTRADO) == false) {
         QSqlQuery query(CreationCommands::createTareasFiltrado);
         if(query.isActive() == false) {
@@ -272,6 +312,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TAREAS_LAVADO
     if (tables.contains(TableNames::TAREAS_LAVADO) == false) {
         QSqlQuery query(CreationCommands::createTareasLavado);
         if(query.isActive() == false) {
@@ -280,6 +321,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TAREAS_REBOBINADO
     if (tables.contains(TableNames::TAREAS_REBOBINADO) == false) {
         QSqlQuery query(CreationCommands::createTareasRebobinado);
         if(query.isActive() == false) {
@@ -288,6 +330,7 @@ MainWindow::setupDataBase()
         }
     }
 
+    // DataBaseUtils::TableNames::TIPOS_MAQUINAS
     if (tables.contains(TableNames::TIPOS_MAQUINAS) == false) {
         QSqlQuery query(CreationCommands::createTiposMaquinas);
         if(query.isActive() == false) {
@@ -297,11 +340,55 @@ MainWindow::setupDataBase()
 
         for (int i = 0; i < DataBaseData::TiposMaquinasStr.size(); ++i) {
 
-            Result<void> res = DataBaseUtils::insert(TableNames::TIPOS_MAQUINAS, KeyAndValue(TiposMaquinasFields::TIPO, DataBaseData::TiposMaquinasStr[i]));
+            Result<void> res = DataBaseUtils::insert(TableNames::TIPOS_MAQUINAS, {KeyAndValue(TiposMaquinasFields::TIPO, DataBaseData::TiposMaquinasStr[i])});
             if (res.status() != Status::SUCCEEDED) {
                 on_showError("Error cargando tabla TIPOS_MAQUINAS: " + res.error());
                 return;
             }
+        }
+    }
+
+    // DataBaseUtils::TableNames::VERSION
+    if (tables.contains(TableNames::VERSION) == false) {
+        QSqlQuery query(CreationCommands::createVersion);
+        if(query.isActive() == false) {
+            on_showError(query.lastError().text());
+            return;
+        }
+
+        Result<void> res = DataBaseUtils::insert(TableNames::VERSION, {KeyAndValue(VersionFields::DB, DataBaseData::currentVersionDB),
+                                                                       KeyAndValue(VersionFields::APP, DataBaseData::currentVersionAPP)});
+        if (res.status() != Status::SUCCEEDED) {
+            on_showError("Error cargando tabla VERSION: " + res.error());
+            return;
+        }
+    } else {
+        Result<double> res = DataBaseUtils::getCurrentVersionAPP();
+        if (res.status() != Status::SUCCEEDED) {
+            on_showError(res.error());
+            return;
+        }
+        if (res.value() < DataBaseData::currentVersionAPP.toDouble()) {
+            Result<void> res = DataBaseUtils::update(TableNames::VERSION, {KeyAndValue(VersionFields::ID, "0")}, {KeyAndValue(VersionFields::APP, DataBaseData::currentVersionAPP)});
+            if (res.status() != Status::SUCCEEDED) {
+                on_showError(res.error());
+                return;
+            }
+            // PLACE APP UPDATE CODE HERE (if necessary)
+        }
+
+        res = DataBaseUtils::getCurrentVersionDB();
+        if (res.status() != Status::SUCCEEDED) {
+            on_showError(res.error());
+            return;
+        }
+        if (res.value() < DataBaseData::currentVersionDB.toDouble()) {
+            Result<void> res = DataBaseUtils::update(TableNames::VERSION, {KeyAndValue(VersionFields::ID, "0")}, {KeyAndValue(VersionFields::DB, DataBaseData::currentVersionDB)});
+            if (res.status() != Status::SUCCEEDED) {
+                on_showError(res.error());
+                return;
+            }
+            // PLACE DB MIGRATION CODE HERE
         }
     }
 
@@ -416,5 +503,17 @@ MainWindow::on_statusBarFadeInFinished()
         mStatusBarFadeOutAnimation->start();
         --mFadeCycles;
     }
+}
 
+void
+MainWindow::on_timerTimeout()
+{
+    QFile source(QCoreApplication::applicationDirPath() + "/Bolsaco");
+    QString dest(QCoreApplication::applicationDirPath() + "/BolsacoBACK-" + QDateTime::currentDateTime().toString(dateFormat).replace(':','.'));
+    if (!source.copy(dest))
+    {
+         on_showError(QString("Error en BACKUP: ").append(source.error()));
+    }
+
+    mTimer->start(DataBaseData::backupInterval);
 }

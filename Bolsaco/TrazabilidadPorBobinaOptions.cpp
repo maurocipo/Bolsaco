@@ -10,6 +10,8 @@ TrazabilidadPorBobinaOptions::TrazabilidadPorBobinaOptions(QWidget *parent) :
     mUi(new Ui::TrazabilidadPorBobinaOptions)
 {
     mUi->setupUi(this);
+
+    mUi->lineEdit_IdsBobinas->setValidator(new QRegExpValidator(QRegExp("[0-9,-]*") , mUi->lineEdit_IdsBobinas));
 }
 
 TrazabilidadPorBobinaOptions::~TrazabilidadPorBobinaOptions()
@@ -83,7 +85,6 @@ TrazabilidadPorBobinaOptions::getHTMLTable() const
         }
     }
 
-    htmlString.append("<h3 style='color: #2e6c80; text-align: center;'>Extrusado/Filmado</h3>");
     htmlString.append("<table width = '100%'>");
     htmlString.append("<u><thead><tr>");
     htmlString.append("<th align = center valign = middle>ID_Bobina</th>");

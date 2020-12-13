@@ -12,6 +12,7 @@ class QPrintPreviewDialog;
 class QPrinter;
 class QTextDocument;
 class NotificationSender;
+class ProduccionPorMaquinaOptions;
 class TrazabilidadPorBobinaOptions;
 
 class Admin : public QWidget
@@ -21,6 +22,8 @@ class Admin : public QWidget
 public:
     explicit Admin(NotificationSender* aNotificationSender, QWidget *parent = nullptr);
     ~Admin();
+
+    void hideOptions();
 
 private slots:
 
@@ -32,11 +35,12 @@ private slots:
 
     void printPreview(QPrinter*);
 
-private:
-    void hideOptions();
+    void on_pushButton_ProdPorMaquina_pressed();
 
+private:
     ActividadPorEmpleadoOptions* mActividadPorEmpleadoOptions;
     NotificationSender* mNotificationSender;
+    ProduccionPorMaquinaOptions* mProduccionPorMaquinaOptions;
     TrazabilidadPorBobinaOptions* mTrazabilidadPorBobinaOptions;
 
     QPrintPreviewDialog* mQPrintPreviewDialog;

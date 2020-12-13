@@ -2,6 +2,8 @@
 
 #include <QBitmap>
 #include <QFile>
+#include <QRegExpValidator>
+#include <QShowEvent>
 #include <QTextStream>
 #include "DataBaseData.h"
 #include "DataBaseUtils.h"
@@ -19,6 +21,8 @@ InicioSesion::InicioSesion(NotificationSender* aNotificationSender, QWidget* par
     mUi(new Ui::InicioSesion)
 {
     mUi->setupUi(this);
+
+    mUi->lineEdit_DNI->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), mUi->lineEdit_DNI));
 
     mUi->label_ErrorDNI->setStyleSheet("color: rgba(255,0,0,0.5)");
     mUi->label_ErrorDNI->hide();
@@ -42,6 +46,8 @@ InicioSesion::InicioSesion(NotificationSender* aNotificationSender, QWidget* par
             file.close();
         }
     }
+
+    this->setSizePolicy(parent->sizePolicy());
 }
 
 InicioSesion::~InicioSesion()
@@ -92,8 +98,8 @@ void InicioSesion::on_pushButton_IniciarSesion_pressed()
 
     if (successfulLogin) {
         mUi->label_ErrorContras->hide();
-        mUi->label_SignoContras->hide();
-        mUi->label_SignoUsuario->hide();
+        mUi->label_SignoContras->setStyleSheet("border-image: 0 0 0 0 stretch stretch;");
+        mUi->label_SignoUsuario->setStyleSheet("border-image: 0 0 0 0 stretch stretch;");
         mUi->lineEdit_Contrasena->clear();
         mUi->lineEdit_DNI->clear();
     } else {
@@ -123,6 +129,7 @@ void InicioSesion::on_lineEdit_Contrasena_returnPressed()
 
 void InicioSesion::on_lineEdit_DNI_editingFinished()
 {
+    mUi->label_SignoUsuario->setMinimumSize(25, 25);
     if (DataBaseUtils::exists(DataBaseUtils::TableNames::OPERARIOS, DataBaseUtils::KeyAndValue(DataBaseUtils::OperariosFields::DNI, mUi->lineEdit_DNI->text())) == false) {
         mUi->label_SignoUsuario->setStyleSheet("border-image: url(:Images/Incorrect.png) 0 0 0 0 stretch stretch;");
         mUi->label_ErrorDNI->show();

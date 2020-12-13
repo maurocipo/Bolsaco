@@ -13,6 +13,7 @@
 const char* DataBaseUtils::dateFormat = "dd.MM.yyyy hh:mm:ss";
 
 const char* DataBaseUtils::TableNames::BOBINAS = "Bobinas";
+const char* DataBaseUtils::TableNames::DATE = "Date";
 const char* DataBaseUtils::TableNames::MAQUINAS = "Maquinas";
 const char* DataBaseUtils::TableNames::MEDIDAS_BOBINAS = "Medidas_Bobinas";
 const char* DataBaseUtils::TableNames::MEDIDAS_BOLSAS = "Medidas_Bolsas";
@@ -24,10 +25,14 @@ const char* DataBaseUtils::TableNames::TAREAS_FILTRADO = "Tareas_Filtrado";
 const char* DataBaseUtils::TableNames::TAREAS_LAVADO = "Tareas_Lavado";
 const char* DataBaseUtils::TableNames::TAREAS_REBOBINADO = "Tareas_Rebobinado";
 const char* DataBaseUtils::TableNames::TIPOS_MAQUINAS = "Tipos_Maquinas";
+const char* DataBaseUtils::TableNames::VERSION = "Version";
 
 const char* DataBaseUtils::BobinasFields::ID = "Id_Bobina";
 const char* DataBaseUtils::BobinasFields::MEDIDA = "Medida";
 const char* DataBaseUtils::BobinasFields::PESO = "Peso";
+
+const char* DataBaseUtils::DateFields::DATE = "Date";
+const char* DataBaseUtils::DateFields::ID = "Id_Date";
 
 const char* DataBaseUtils::MaquinasFields::DESCRIPCION = "Descripcion";
 const char* DataBaseUtils::MaquinasFields::ID = "Id_Maquina";
@@ -84,6 +89,10 @@ const char* DataBaseUtils::TareaRebobinadoFields::KILOS = "Kilos";
 const char* DataBaseUtils::TiposMaquinasFields::ID = "Id_Tipo_de_Maquina";
 const char* DataBaseUtils::TiposMaquinasFields::TIPO = "Tipo";
 
+const char* DataBaseUtils::VersionFields::ID = "Id_Version";
+const char* DataBaseUtils::VersionFields::APP = "Version_App";
+const char* DataBaseUtils::VersionFields::DB = "Version_DB";
+
 const std::string createBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::BOBINAS) +
                                      "(" +
                                      std::string(DataBaseUtils::BobinasFields::ID)     + " integer NOT NULL," +
@@ -92,6 +101,14 @@ const std::string createBobinasStr = "CREATE TABLE " + std::string(DataBaseUtils
                                      "PRIMARY KEY (" + std::string(DataBaseUtils::BobinasFields::ID) + ")" +
                                      ");";
 const char* DataBaseUtils::CreationCommands::createBobinas = createBobinasStr.c_str();
+
+const std::string createDateStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::DATE) +
+                                     "(" +
+                                     std::string(DataBaseUtils::DateFields::ID)   + " integer NOT NULL," +
+                                     std::string(DataBaseUtils::DateFields::DATE) + " string  NOT NULL," +
+                                     "PRIMARY KEY (" + std::string(DataBaseUtils::DateFields::ID) + ")" +
+                                     ");";
+const char* DataBaseUtils::CreationCommands::createDate = createDateStr.c_str();
 
 const std::string createMaquinasStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::MAQUINAS) +
                                       "(" +
@@ -140,7 +157,7 @@ const char* DataBaseUtils::CreationCommands::createProductosRebobinado = createP
 const std::string createTareasCortadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_CORTADO) +
                                            "(" +
                                            std::string(DataBaseUtils::TareaCortadoFields::CANTIDAD)        + " integer NOT NULL," +
-                                           std::string(DataBaseUtils::TareaCortadoFields::FECHA)           + " string    NOT NULL," +
+                                           std::string(DataBaseUtils::TareaCortadoFields::FECHA)           + " string  NOT NULL," +
                                            std::string(DataBaseUtils::TareaCortadoFields::ID)              + " integer NOT NULL," +
                                            std::string(DataBaseUtils::TareaCortadoFields::ID_BOBINA)       + " integer NOT NULL," +
                                            std::string(DataBaseUtils::TareaCortadoFields::ID_MAQUINA)      + " integer NOT NULL," +
@@ -152,7 +169,7 @@ const char* DataBaseUtils::CreationCommands::createTareasCortado = createTareasC
 
 const std::string createTareasExtrusadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_EXTRUSADO) +
                                              "(" +
-                                             std::string(DataBaseUtils::TareaExtrusadoFields::FECHA)       + " string    NOT NULL," +
+                                             std::string(DataBaseUtils::TareaExtrusadoFields::FECHA)       + " string  NOT NULL," +
                                              std::string(DataBaseUtils::TareaExtrusadoFields::ID)          + " integer NOT NULL," +
                                              std::string(DataBaseUtils::TareaExtrusadoFields::ID_BOBINA)   + " integer NOT NULL," +
                                              std::string(DataBaseUtils::TareaExtrusadoFields::ID_MAQUINA)  + " integer NOT NULL," +
@@ -163,7 +180,7 @@ const char* DataBaseUtils::CreationCommands::createTareasExtrusado = createTarea
 
 const std::string createTareasFiltradoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_FILTRADO) +
                                             "(" +
-                                            std::string(DataBaseUtils::TareaFiltradoFields::FECHA)       + " string    NOT NULL," +
+                                            std::string(DataBaseUtils::TareaFiltradoFields::FECHA)       + " string  NOT NULL," +
                                             std::string(DataBaseUtils::TareaFiltradoFields::ID)          + " integer NOT NULL," +
                                             std::string(DataBaseUtils::TareaFiltradoFields::ID_MAQUINA)  + " integer NOT NULL," +
                                             std::string(DataBaseUtils::TareaFiltradoFields::ID_OPERARIO) + " integer NOT NULL," +
@@ -174,7 +191,7 @@ const char* DataBaseUtils::CreationCommands::createTareasFiltrado = createTareas
 
 const std::string createTareasLavadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_LAVADO) +
                                           "(" +
-                                          std::string(DataBaseUtils::TareaLavadoFields::FECHA)       + " date    NOT NULL," +
+                                          std::string(DataBaseUtils::TareaLavadoFields::FECHA)       + " string  NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID)          + " integer NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID_MAQUINA)  + " integer NOT NULL," +
                                           std::string(DataBaseUtils::TareaLavadoFields::ID_OPERARIO) + " integer NOT NULL," +
@@ -185,7 +202,7 @@ const char* DataBaseUtils::CreationCommands::createTareasLavado = createTareasLa
 
 const std::string createTareasRebobinadoStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::TAREAS_REBOBINADO) +
                                               "(" +
-                                              std::string(DataBaseUtils::TareaRebobinadoFields::FECHA)                    + " string    NOT NULL," +
+                                              std::string(DataBaseUtils::TareaRebobinadoFields::FECHA)                    + " string  NOT NULL," +
                                               std::string(DataBaseUtils::TareaRebobinadoFields::ID)                       + " integer NOT NULL," +
                                               std::string(DataBaseUtils::TareaRebobinadoFields::ID_MAQUINA)               + " integer NOT NULL," +
                                               std::string(DataBaseUtils::TareaRebobinadoFields::ID_OPERARIO)              + " integer NOT NULL," +
@@ -202,6 +219,15 @@ const std::string createTiposMaquinasStr = "CREATE TABLE " + std::string(DataBas
                                            "PRIMARY KEY (" + std::string(DataBaseUtils::TiposMaquinasFields::ID) + ")" +
                                            ");";
 const char* DataBaseUtils::CreationCommands::createTiposMaquinas = createTiposMaquinasStr.c_str();
+
+const std::string createVersionStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::VERSION) +
+                                     "(" +
+                                     std::string(DataBaseUtils::VersionFields::ID)  + " integer NOT NULL," +
+                                     std::string(DataBaseUtils::VersionFields::APP) + " string  NOT NULL," +
+                                     std::string(DataBaseUtils::VersionFields::DB)  + " string  NOT NULL," +
+                                     "PRIMARY KEY (" + std::string(DataBaseUtils::VersionFields::ID) + ")" +
+                                     ");";
+const char* DataBaseUtils::CreationCommands::createVersion = createVersionStr.c_str();
 
 QString
 DataBaseUtils::buildSelectQuery(const QString& aTable, const QString& aColumn, const std::vector<KeyAndValue>& aConditions)
@@ -267,7 +293,14 @@ DataBaseUtils::internalSelect(const QString& aTable, const QString& aSelectQuery
             if (medidaIndex >= 0) returnData.emplace_back(KeyAndValue(BobinasFields::MEDIDA, query.value(medidaIndex).toString()));
             if (pesoIndex >= 0) returnData.emplace_back(KeyAndValue(BobinasFields::PESO, query.value(pesoIndex).toString()));
         }
-    } else if (aTable == TableNames::MAQUINAS) {
+    } else if (aTable == TableNames::DATE) {
+        const int idIndex = query.record().indexOf(DateFields::ID);
+        const int dateIndex = query.record().indexOf(DateFields::DATE);
+        while (query.next()) {
+            if (idIndex >= 0) returnData.emplace_back(KeyAndValue(DateFields::ID, query.value(idIndex).toString()));
+            if (dateIndex >= 0) returnData.emplace_back(KeyAndValue(DateFields::DATE, query.value(dateIndex).toString()));
+        }
+    }else if (aTable == TableNames::MAQUINAS) {
         const int descripcionIndex = query.record().indexOf(MaquinasFields::DESCRIPCION);
         const int idIndex = query.record().indexOf(MaquinasFields::ID);
         const int idNumero = query.record().indexOf(MaquinasFields::NUMERO);
@@ -388,6 +421,15 @@ DataBaseUtils::internalSelect(const QString& aTable, const QString& aSelectQuery
            if (idIndex >= 0) returnData.emplace_back(KeyAndValue(TiposMaquinasFields::ID, query.value(idIndex).toString()));
            if (tipoIndex >= 0)  returnData.emplace_back(KeyAndValue(TiposMaquinasFields::TIPO, query.value(tipoIndex).toString()));
         }
+    } else if (aTable == TableNames::VERSION) {
+        const int idIndex = query.record().indexOf(VersionFields::ID);
+        const int appIndex = query.record().indexOf(VersionFields::APP);
+        const int dbIndex = query.record().indexOf(VersionFields::DB);
+        while (query.next()) {
+           if (idIndex >= 0) returnData.emplace_back(KeyAndValue(VersionFields::ID, query.value(idIndex).toString()));
+           if (appIndex >= 0) returnData.emplace_back(KeyAndValue(VersionFields::APP, query.value(appIndex).toString()));
+           if (dbIndex >= 0) returnData.emplace_back(KeyAndValue(VersionFields::DB, query.value(dbIndex).toString()));
+        }
     } else {
         return Result<std::vector<DataBaseUtils::KeyAndValue>>(Status::FAILED, "La tabla no existe");
     }
@@ -404,14 +446,6 @@ DataBaseUtils::print(const QString aTable, const QString aColumn)
        QString column = query.value(idColumn).toString();
        qDebug() << column;
     }
-}
-
-Result<void>
-DataBaseUtils::insert(const QString& aTable, const KeyAndValue& aToInsert)
-{
-    std::vector<KeyAndValue> vec;
-    vec.emplace_back(aToInsert);
-    return insert(aTable, vec);
 }
 
 Result<void>
@@ -438,14 +472,6 @@ DataBaseUtils::insert(const QString& aTable, const std::vector<KeyAndValue>& aTo
     }
 
     return Status::SUCCEEDED;
-}
-
-Result<void>
-DataBaseUtils::update(const QString& aTable, const std::vector<KeyAndValue>& aToUpdate, const KeyAndValue& aCondition)
-{
-    std::vector<KeyAndValue> vec;
-    vec.emplace_back(aCondition);
-    return update(aTable, aToUpdate, vec);
 }
 
 Result<void>
@@ -497,8 +523,7 @@ DataBaseUtils::getTableEntriesCount(const QString& aTable)
 Result<QString>
 DataBaseUtils::getGratestBobinaId()
 {
-    std::vector<KeyAndValue> conditions;
-    Result<std::vector<KeyAndValue>> result = select(TableNames::BOBINAS, BobinasFields::ID, conditions);
+    Result<std::vector<KeyAndValue>> result = select(TableNames::BOBINAS, BobinasFields::ID, {});
     if (result.status() != Status::SUCCEEDED) {
         return Result<QString>(Status::FAILED, result.error());
     }
@@ -616,4 +641,46 @@ DataBaseUtils::getProductoRebobinadoId(const QString& aDescripcion)
 {
     Result<std::vector<KeyAndValue>> selectResult = select(TableNames::PRODUCTOS_REBOBINADO, ProductosRebobinadoFields::ID, {KeyAndValue(ProductosRebobinadoFields::DESCRIPCION, aDescripcion)});
     return selectResult.value().begin()->mValue;
+}
+
+Result<double>
+DataBaseUtils::getCurrentVersionAPP()
+{
+    Result<std::vector<KeyAndValue>> result = select(TableNames::VERSION, VersionFields::APP, {});
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<double>(Status::FAILED, result.error());
+    }
+    if (result.value().empty()) {
+        return Result<double>(Status::FAILED, "ERROR: NO APP VERSION FOUND!!");
+    } else {
+        return result.value().back().mValue.toDouble();
+    }
+}
+
+Result<double>
+DataBaseUtils::getCurrentVersionDB()
+{
+    Result<std::vector<KeyAndValue>> result = select(TableNames::VERSION, VersionFields::DB, {});
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<double>(Status::FAILED, result.error());
+    }
+    if (result.value().empty()) {
+        return Result<double>(Status::FAILED, "ERROR: NO DB VERSION FOUND!!");
+    } else {
+        return result.value().back().mValue.toDouble();
+    }
+}
+
+Result<QDateTime>
+DataBaseUtils::getStoredDate()
+{
+    Result<std::vector<KeyAndValue>> result = select(TableNames::DATE, DateFields::DATE, {});
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<QDateTime>(Status::FAILED, result.error());
+    }
+    if (result.value().empty()) {
+        return Result<QDateTime>(Status::FAILED, "ERROR: NO DATE STORED");
+    } else {
+        return QDateTime::fromString(result.value().back().mValue, dateFormat);
+    }
 }

@@ -11,6 +11,7 @@
 #include "ActividadPorEmpleadoOptions.h"
 #include "DataBaseUtils.h"
 #include "NotificationSender.h"
+#include "ProduccionPorMaquinaOptions.h"
 #include "TrazabilidadPorBobinaOptions.h"
 
 using namespace DataBaseUtils;
@@ -23,7 +24,11 @@ Admin::Admin(NotificationSender* aNotificationSender, QWidget *parent) :
     mUi->setupUi(this);
 
     mActividadPorEmpleadoOptions = new ActividadPorEmpleadoOptions(mNotificationSender, mUi->widgetAvailableOptions);
+    mUi->widgetAvailableOptions->layout()->addWidget(mActividadPorEmpleadoOptions);
     mTrazabilidadPorBobinaOptions = new TrazabilidadPorBobinaOptions(mUi->widgetAvailableOptions);
+    mUi->widgetAvailableOptions->layout()->addWidget(mTrazabilidadPorBobinaOptions);
+    mProduccionPorMaquinaOptions = new ProduccionPorMaquinaOptions(mUi->widgetAvailableOptions);
+    mUi->widgetAvailableOptions->layout()->addWidget(mProduccionPorMaquinaOptions);
 
     mQTextBrowser = new QTextDocument();
     mQPrinter = new QPrinter(QPrinter::ScreenResolution);
@@ -54,6 +59,7 @@ Admin::hideOptions()
 {
     mActividadPorEmpleadoOptions->hide();
     mTrazabilidadPorBobinaOptions->hide();
+    mProduccionPorMaquinaOptions->hide();
 
     mUi->pushButton_GenerarReporte->hide();
 }
@@ -78,6 +84,15 @@ Admin::on_pushButton_TrazBobinas_pressed()
 }
 
 void
+Admin::on_pushButton_ProdPorMaquina_pressed()
+{
+    hideOptions();
+
+    mProduccionPorMaquinaOptions->show();
+    mUi->pushButton_GenerarReporte->show();
+}
+
+void
 Admin::on_pushButton_GenerarReporte_pressed()
 {
     QString htmlTable;
@@ -95,8 +110,13 @@ Admin::on_pushButton_GenerarReporte_pressed()
             return;
         }
         htmlTable = res.value();
-    } else if (/*mProduccionPorMaquinaOptions->isVisible()*/false) {
-
+    } else if (mProduccionPorMaquinaOptions->isVisible()) {
+        Result<QString> res = mProduccionPorMaquinaOptions->getHTMLTable();
+        if (res.status() == Status::FAILED) {
+            mNotificationSender->emitShowError(res.error());
+            return;
+        }
+        htmlTable = res.value();
     }
     QString fullHtmlCode = "<html><meta charset='utf-8'><body>";
 

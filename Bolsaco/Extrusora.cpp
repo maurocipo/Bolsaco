@@ -54,26 +54,26 @@ void
 Extrusora::setBobinasIds(const QString& aCurrentGratestBobinaId)
 {
     int bobinaId = aCurrentGratestBobinaId.toInt() + 1;
-    mUi->label_Bobina1->setText(QString::number(bobinaId++));
-    mUi->label_Bobina2->setText(QString::number(bobinaId++));
-    mUi->label_Bobina3->setText(QString::number(bobinaId++));
-    mUi->label_Bobina4->setText(QString::number(bobinaId++));
-    mUi->label_Bobina5->setText(QString::number(bobinaId++));
-    mUi->label_Bobina6->setText(QString::number(bobinaId++));
-    mUi->label_Bobina7->setText(QString::number(bobinaId++));
-    mUi->label_Bobina8->setText(QString::number(bobinaId++));
-    mUi->label_Bobina9->setText(QString::number(bobinaId++));
-    mUi->label_Bobina10->setText(QString::number(bobinaId++));
-    mUi->label_Bobina11->setText(QString::number(bobinaId++));
-    mUi->label_Bobina12->setText(QString::number(bobinaId++));
-    mUi->label_Bobina13->setText(QString::number(bobinaId++));
-    mUi->label_Bobina14->setText(QString::number(bobinaId++));
-    mUi->label_Bobina15->setText(QString::number(bobinaId++));
-    mUi->label_Bobina16->setText(QString::number(bobinaId++));
-    mUi->label_Bobina17->setText(QString::number(bobinaId++));
-    mUi->label_Bobina18->setText(QString::number(bobinaId++));
-    mUi->label_Bobina19->setText(QString::number(bobinaId++));
-    mUi->label_Bobina20->setText(QString::number(bobinaId++));
+    mUi->label_Bobina1->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina2->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina3->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina4->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina5->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina6->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina7->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina8->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina9->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina10->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina11->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina12->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina13->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina14->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina15->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina16->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina17->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina18->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina19->setText(QString::number(bobinaId++).append(":"));
+    mUi->label_Bobina20->setText(QString::number(bobinaId++).append(":"));
 }
 
 Medida

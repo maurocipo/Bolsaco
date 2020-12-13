@@ -5,6 +5,11 @@
 
 namespace DataBaseData {
 
+const int backupInterval = 28800000; // Value in miliseconds. 8hs = 8 * 3600 * 1000 = 28800000
+
+const QString currentVersionDB("1.0");
+const QString currentVersionAPP("1.0");
+
 const QStringList
 MedidasAnchoBobinas {"10",
                      "20"};

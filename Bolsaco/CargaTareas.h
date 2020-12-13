@@ -25,6 +25,7 @@ public:
     ~CargaTareas();
 
     void setCurrentUser(const unsigned int aUser) {mCurrentUser = aUser;}
+    void hideMaquinas() const;
 
 private slots:
     void on_comboBox_numero_currentIndexChanged(int index);
@@ -32,8 +33,6 @@ private slots:
     void on_pushButton_guardar_pressed();
 
 private:
-    void hideMaquinas() const;
-
     Result<void> storeTareaCortado(const QString& aIdMaquina, const QString& aIdOperario);
     Result<void> storeTareaExtrusado(const QString& aIdMaquina, const QString& aIdOperario);
     Result<void> storeTareaFiltrado(const QString& aIdMaquina, const QString& aIdOperario);

@@ -18,6 +18,7 @@ namespace DataBaseUtils
     struct TableNames
     {
         static const char* BOBINAS;
+        static const char* DATE;
         static const char* MAQUINAS;
         static const char* MEDIDAS_BOBINAS;
         static const char* MEDIDAS_BOLSAS;
@@ -29,11 +30,13 @@ namespace DataBaseUtils
         static const char* TAREAS_LAVADO;
         static const char* TAREAS_REBOBINADO;
         static const char* TIPOS_MAQUINAS;
+        static const char* VERSION;
     };
 //------------------------------------------------------
     struct CreationCommands
     {
         static const char* createBobinas;
+        static const char* createDate;
         static const char* createMaquinas;
         static const char* createMedidasBobinas;
         static const char* createMedidasBolsas;
@@ -45,6 +48,7 @@ namespace DataBaseUtils
         static const char* createTareasLavado;
         static const char* createTareasRebobinado;
         static const char* createTiposMaquinas;
+        static const char* createVersion;
     };
 //------------------------------------------------------
     struct BobinasFields
@@ -52,6 +56,11 @@ namespace DataBaseUtils
         static const char* ID;
         static const char* MEDIDA;
         static const char* PESO;
+    };
+    struct DateFields
+    {
+        static const char* ID;
+        static const char* DATE;
     };
     struct MaquinasFields
     {
@@ -130,6 +139,13 @@ namespace DataBaseUtils
         static const char* ID;
         static const char* TIPO;
     };
+    struct VersionFields
+    {
+        static const char* ID;
+        static const char* APP;
+        static const char* DB;
+    };
+
 //------------------------------------------------------
     struct Maquina {
         Maquina(const int aTipo, const int aNumero, const QString aDescripcion):
@@ -187,12 +203,8 @@ namespace DataBaseUtils
     void print(const QString aTable, const QString aColumn);
 
     Result<void>
-    insert(const QString& aTable, const KeyAndValue& aToInsert);
-    Result<void>
     insert(const QString& aTable, const std::vector<KeyAndValue>& aToInsert);
 
-    Result<void>
-    update(const QString& aTable, const std::vector<KeyAndValue>& aToUpdate, const KeyAndValue& aCondition);
     Result<void>
     update(const QString& aTable, const std::vector<KeyAndValue>& aToUpdate, const std::vector<KeyAndValue>& aConditions);
 
@@ -226,5 +238,13 @@ namespace DataBaseUtils
     QString
     getProductoRebobinadoId(const QString& aDescripcion);
 
+    Result<double>
+    getCurrentVersionAPP();
+
+    Result<double>
+    getCurrentVersionDB();
+
+    Result<QDateTime>
+    getStoredDate();
 };
 #endif // DATABASEUTILS_H
