@@ -32,6 +32,18 @@ ProduccionPorMaquinaOptions::~ProduccionPorMaquinaOptions()
 }
 
 void
+ProduccionPorMaquinaOptions::clear()
+{
+    mUi->checkBox_FechaDesde->setChecked(false);
+    mUi->checkBox_FechaHasta->setChecked(false);
+
+    mUi->comboBox_Maquina->setCurrentIndex(-1);
+
+    mUi->dateTimeEdit_Desde->clear();
+    mUi->dateTimeEdit_Hasta->clear();
+}
+
+void
 ProduccionPorMaquinaOptions::fillComboboxMaquina()
 {
     QStringList maquinas;

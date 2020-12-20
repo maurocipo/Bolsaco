@@ -17,9 +17,9 @@ public:
     explicit ProduccionPorMaquinaOptions(QWidget *parent = nullptr);
     ~ProduccionPorMaquinaOptions();
 
-    Result<QString>
-    getHTMLTable();
+    Result<QString> getHTMLTable();
 
+    void clear();
 private:
     void fillComboboxMaquina();
 

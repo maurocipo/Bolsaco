@@ -33,5 +33,18 @@ Rebobinadora::getKilos() const
     if (mUi->spinBox_Film50BocaAncha->value() > 0) returnData.emplace_back(ProductIdAndKilos(DataBaseData::ProductosRebobinados::FILM50BOCAANCHA, mUi->spinBox_Film50BocaAncha->value()));
     if (mUi->spinBox_Film50CMango->value() > 0) returnData.emplace_back(ProductIdAndKilos(DataBaseData::ProductosRebobinados::FILM50CMANGO, mUi->spinBox_Film50CMango->value()));
     return returnData;
+}
 
+bool
+Rebobinadora::hasUnsavedWork() const
+{
+    if (mUi->spinBox_Film10->value() > 0 ||
+        mUi->spinBox_Film50Automatico->value() > 0 ||
+        mUi->spinBox_Film50BocaAncha->value() > 0 ||
+        mUi->spinBox_Film50CMango->value() > 0) {
+
+        return true;
+    } else {
+        return false;
+    }
 }

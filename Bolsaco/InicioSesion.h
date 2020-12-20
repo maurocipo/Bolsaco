@@ -33,6 +33,10 @@ private slots:
 
     void on_lineEdit_DNI_editingFinished();
 
+    void on_newUserAdded(const QString&);
+
+    void on_passwordNeedsUpdate(const QString& aOldDNI, const QString& aNewDNI);
+
 private:
     QString mAccessFile;
     unsigned int mCurrentUser;

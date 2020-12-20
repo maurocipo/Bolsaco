@@ -27,6 +27,7 @@ public:
 
     void clear();
     void fillLargos(const QStringList& aMedidas);
+    bool hasUnsavedWork() const;
 
     QString getLargo() const;
     std::vector<BobinaIdAndCortes> getData() const;

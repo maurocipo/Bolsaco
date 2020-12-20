@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TrazabilidadPorBobinaOptions</class>
- <widget class="QWidget" name="TrazabilidadPorBobinaOptions">
+ <class>DatosBobinasOptions</class>
+ <widget class="QWidget" name="DatosBobinasOptions">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>339</height>
+    <width>402</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0,0,0,0,0,0,0,0,5" columnstretch="1,0,0,0,1">
-   <item row="3" column="4">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="2,0,1,0,0,0,5" columnstretch="1,0,0,0,1">
+   <item row="4" column="4">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -27,68 +27,55 @@
      </property>
     </spacer>
    </item>
-   <item row="6" column="3">
-    <widget class="QLineEdit" name="lineEdit_IdsBobinas">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="5">
-    <widget class="QLabel" name="label_5">
-     <property name="font">
-      <font>
-       <pointsize>15</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Trazabilidad por Bobinas</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
    <item row="4" column="2">
-    <widget class="QLabel" name="label_4">
+    <widget class="QSpinBox" name="spinBox_Micronaje">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
+    <widget class="QSpinBox" name="spinBox_Largo">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLabel" name="label_3">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>Hasta:</string>
+      <string>Largo</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <spacer name="horizontalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="7" column="3">
-    <widget class="QLabel" name="label_2">
+   <item row="5" column="3">
+    <widget class="QToolButton" name="toolButton_Largo">
      <property name="font">
       <font>
-       <italic>true</italic>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>Ej: 1 - 5 , 8</string>
+      <string>+</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="2">
+   <item row="6" column="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -101,7 +88,19 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="2">
+   <item row="3" column="2">
+    <widget class="QSpinBox" name="spinBox_Ancho">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -113,6 +112,18 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="4" column="3">
+    <widget class="QToolButton" name="toolButton_Micronaje">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>+</string>
+     </property>
+    </widget>
    </item>
    <item row="4" column="0">
     <spacer name="horizontalSpacer">
@@ -127,7 +138,19 @@
      </property>
     </spacer>
    </item>
-   <item row="6" column="1" colspan="2">
+   <item row="4" column="1">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Micronaje</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
@@ -135,32 +158,23 @@
       </font>
      </property>
      <property name="text">
-      <string>Ids Bobinas (Opcional):</string>
+      <string>Ancho</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="2">
-    <widget class="QLabel" name="label_3">
+   <item row="3" column="3">
+    <widget class="QToolButton" name="toolButton_Ancho">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>Desde:</string>
+      <string>+</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
-    <widget class="QDateTimeEdit" name="dateTimeEdit_Desde">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="2">
+   <item row="0" column="2">
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -173,35 +187,23 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="3">
-    <widget class="QDateTimeEdit" name="dateTimeEdit_Hasta">
+   <item row="1" column="0" colspan="5">
+    <widget class="QLabel" name="label_4">
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
+       <pointsize>15</pointsize>
       </font>
+     </property>
+     <property name="text">
+      <string>Agregar Medidas Bobinas/Cortes</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <spacer name="verticalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>dateTimeEdit_Desde</tabstop>
-  <tabstop>dateTimeEdit_Hasta</tabstop>
-  <tabstop>lineEdit_IdsBobinas</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

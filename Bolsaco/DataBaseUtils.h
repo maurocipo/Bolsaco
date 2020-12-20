@@ -85,6 +85,7 @@ namespace DataBaseUtils
         static const char* ID;
         static const char* NOMBRE_COMPLETO;
         static const char* DNI;
+        static const char* IS_ADMIN;
     };
     struct ProductosRebobinadoFields
     {
@@ -159,12 +160,14 @@ namespace DataBaseUtils
     };
 
     struct Operario {
-        Operario(const QString& aNombreYApellido, const int aDNI):
+        Operario(const QString& aNombreYApellido, const int aDNI, const bool aIsAdmin):
             mNombreYApellido(aNombreYApellido),
-            mDNI(aDNI) {}
+            mDNI(aDNI),
+            mIsAdmin(aIsAdmin) {}
 
         QString mNombreYApellido;
         int mDNI;
+        bool mIsAdmin;
     };
 //------------------------------------------------------
     struct KeyAndValue
@@ -246,5 +249,8 @@ namespace DataBaseUtils
 
     Result<QDateTime>
     getStoredDate();
+
+    Result<bool>
+    isAdmin(const QString& aDNI);
 };
 #endif // DATABASEUTILS_H

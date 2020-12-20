@@ -11,16 +11,12 @@ const QString currentVersionDB("1.0");
 const QString currentVersionAPP("1.0");
 
 const QStringList
-MedidasAnchoBobinas {"10",
-                     "20"};
+MedidasAnchoBobinas {"45"};
 const QStringList
-MedidasMicronajeBobinas {"30",
-                         "40"};
+MedidasMicronajeBobinas {"50"};
 
 const QStringList
-MedidasLargoBolsas {"40",
-                    "50",
-                    "60"};
+MedidasLargoBolsas {"50"};
 
 const QStringList
 ProductosRebobinadoStr {"Film 50cm c/ Mango",
@@ -38,33 +34,8 @@ enum ProductosRebobinados
 
 const std::vector<DataBaseUtils::Operario>
 Operarios {
-    DataBaseUtils::Operario("Mauro Cipolatti", 34990189),
-    DataBaseUtils::Operario("Martin Cipolatti", 28268919),
-    DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
-            DataBaseUtils::Operario("Juan Perez", 10000000),
+    DataBaseUtils::Operario("Mauro Cipolatti", 34990189, true),
+    DataBaseUtils::Operario("Martin Cipolatti", 28268919, true),
 };
 
 // This enum matches with CantidadMaquinas array.

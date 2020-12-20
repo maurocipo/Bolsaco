@@ -183,6 +183,7 @@
  </widget>
  <tabstops>
   <tabstop>comboBox_tipoDeMaquina</tabstop>
+  <tabstop>comboBox_numero</tabstop>
   <tabstop>pushButton_guardar</tabstop>
  </tabstops>
  <resources/>

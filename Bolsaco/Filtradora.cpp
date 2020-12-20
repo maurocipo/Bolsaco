@@ -24,3 +24,12 @@ Filtradora::getKilos() const
 {
     return mUi->doubleSpinBox->value();
 }
+
+bool
+Filtradora::hasUnsavedWork() const {
+    if (mUi->doubleSpinBox->value() != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}

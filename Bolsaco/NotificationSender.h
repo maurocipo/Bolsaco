@@ -17,6 +17,8 @@ signals:
     void showWarning(const QString& aWarning);
     void showInfo(const QString& aInfo);
     void clearStatusBar();
+    void newUserAdded(const QString& aDNI);
+    void passwordNeedsUpdate(const QString& aOldDNI, const QString& aNewDNI);
 
 public:
     explicit NotificationSender(QWidget *aParent = nullptr);
@@ -28,6 +30,8 @@ public:
     void emitShowWarning(const QString& aWarning);
     void emitShowInfo(const QString& aInf);
     void emitClearStatusBar();
+    void emitNewUserAdded(const QString& aDNI);
+    void emitPasswordNeedsUpdate(const QString& aOldDNI, const QString& aNewDNI);
 
 };
 

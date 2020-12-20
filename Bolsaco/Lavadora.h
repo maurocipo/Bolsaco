@@ -18,6 +18,8 @@ public:
     std::vector<double> getKilosBolsones() const;
     void clear();
 
+    bool hasUnsavedWork() const;
+
 private:
     Ui::Lavadora *mUi;
 };

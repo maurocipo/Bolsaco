@@ -1,8 +1,16 @@
+/*
+    Name and use of crypted files
+    - data -> Data Base
+    - data1 -> Users and Psw
+
+*/
+
 #include "mainwindow.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QGraphicsOpacityEffect>
+#include <QMessageBox>
 #include <QPropertyAnimation>
 #include <QResizeEvent>
 #include <QSqlDriver>
@@ -102,6 +110,7 @@ MainWindow::hideViews()
 
     mCargaTareas->hide();
     mCargaTareas->hideMaquinas();
+    mCargaTareas->clearOptions();
 
     mInicioSesion->hide();
 
@@ -119,7 +128,7 @@ MainWindow::setupDataBase()
     }
 
     mDb = QSqlDatabase::addDatabase(DRIVER);
-    mDb.setDatabaseName(QCoreApplication::applicationDirPath() + "/Bolsaco");
+    mDb.setDatabaseName(QCoreApplication::applicationDirPath() + "/data");
     if(mDb.open() == false) {
         on_showError(mDb.lastError().text());
         return;
@@ -251,7 +260,10 @@ MainWindow::setupDataBase()
         for (size_t i = 0; i < DataBaseData::Operarios.size(); ++i) {
             std::vector<KeyAndValue> operario;
             operario.emplace_back(OperariosFields::DNI, QString::number(DataBaseData::Operarios[i].mDNI));
-            operario.emplace_back(OperariosFields::NOMBRE_COMPLETO, QString(DataBaseData::Operarios[i].mNombreYApellido));
+            operario.emplace_back(OperariosFields::NOMBRE_COMPLETO, DataBaseData::Operarios[i].mNombreYApellido);
+            if (DataBaseData::Operarios[i].mIsAdmin) {
+                operario.emplace_back(OperariosFields::IS_ADMIN, "X");
+            }
             Result<void> res = DataBaseUtils::insert(TableNames::OPERARIOS, operario);
             if (res.status() != Status::SUCCEEDED) {
                 on_showError("Error cargando tabla OPERARIOS: " + res.error());
@@ -446,6 +458,26 @@ MainWindow::setUser()
 void
 MainWindow::on_pushButton_CerrarSesion_clicked()
 {
+    bool unsavedWork = false;
+    if (mCargaTareas->isVisible()) {
+        unsavedWork = mCargaTareas->hasUnsavedWork();
+    }
+
+    if (unsavedWork) {
+        switch(QMessageBox::question(this,
+                                     tr("Atencion!"),
+                                     tr("Desea salir sin guardar?"),
+                                     QMessageBox::Yes | QMessageBox::No, QMessageBox::No))
+        {
+            case QMessageBox::Yes:
+                break;
+            case QMessageBox::No:
+                return;
+            default:
+                break;
+        }
+    }
+
     hideViews();
     on_clearStatusBar();
     mInicioSesion->show();

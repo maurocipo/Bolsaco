@@ -16,6 +16,8 @@ SOURCES += \
     CargaTareas.cpp \
     Cortadora.cpp \
     DataBaseUtils.cpp \
+    DatosBobinasOptions.cpp \
+    DatosEmpleadosOptions.cpp \
     Extrusora.cpp \
     Filtradora.cpp \
     InicioSesion.cpp \
@@ -35,6 +37,8 @@ HEADERS += \
     Cortadora.h \
     DataBaseData.h \
     DataBaseUtils.h \
+    DatosBobinasOptions.h \
+    DatosEmpleadosOptions.h \
     Extrusora.h \
     Filtradora.h \
     InicioSesion.h \
@@ -52,6 +56,8 @@ FORMS += \
     Admin.ui \
     CargaTareas.ui \
     Cortadora.ui \
+    DatosBobinasOptions.ui \
+    DatosEmpleadosOptions.ui \
     Extrusora.ui \
     Filtradora.ui \
     InicioSesion.ui \

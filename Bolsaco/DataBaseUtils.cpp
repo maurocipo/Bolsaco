@@ -49,6 +49,7 @@ const char* DataBaseUtils::MedidasBolsasFields::LARGO = "Largo";
 const char* DataBaseUtils::OperariosFields::DNI = "DNI";
 const char* DataBaseUtils::OperariosFields::ID = "Id_Operario";
 const char* DataBaseUtils::OperariosFields::NOMBRE_COMPLETO = "Nombre_Completo";
+const char* DataBaseUtils::OperariosFields::IS_ADMIN = "Is_Admin";
 
 const char* DataBaseUtils::ProductosRebobinadoFields::DESCRIPCION = "Descripcion";
 const char* DataBaseUtils::ProductosRebobinadoFields::ID = "Id_Producto_Rebobinado";
@@ -139,9 +140,10 @@ const char* DataBaseUtils::CreationCommands::createMedidasBolsas = createMedidas
 
 const std::string createOperariosStr = "CREATE TABLE " + std::string(DataBaseUtils::TableNames::OPERARIOS) +
                                        "(" +
-                                       std::string(DataBaseUtils::OperariosFields::DNI)             + " integer NOT NULL," +
+                                       std::string(DataBaseUtils::OperariosFields::DNI)             + " integer NOT NULL UNIQUE," +
                                        std::string(DataBaseUtils::OperariosFields::ID)              + " integer NOT NULL," +
                                        std::string(DataBaseUtils::OperariosFields::NOMBRE_COMPLETO) + " string  NOT NULL," +
+                                       std::string(DataBaseUtils::OperariosFields::IS_ADMIN)        + " string  ," +
                                        "PRIMARY KEY (" + std::string(DataBaseUtils::OperariosFields::ID) + ")" +
                                        ");";
 const char* DataBaseUtils::CreationCommands::createOperarios = createOperariosStr.c_str();
@@ -331,10 +333,12 @@ DataBaseUtils::internalSelect(const QString& aTable, const QString& aSelectQuery
         const int dniIndex = query.record().indexOf(OperariosFields::DNI);
         const int idIndex = query.record().indexOf(OperariosFields::ID);
         const int nombreCompletoIndex = query.record().indexOf(OperariosFields::NOMBRE_COMPLETO);
+        const int isAdminIndex = query.record().indexOf(OperariosFields::IS_ADMIN);
         while (query.next()) {
             if (dniIndex >= 0) returnData.emplace_back(KeyAndValue(OperariosFields::DNI, query.value(dniIndex).toString()));
             if (idIndex >= 0) returnData.emplace_back(KeyAndValue(OperariosFields::ID, query.value(idIndex).toString()));
             if (nombreCompletoIndex >= 0) returnData.emplace_back(KeyAndValue(OperariosFields::NOMBRE_COMPLETO, query.value(nombreCompletoIndex).toString()));
+            if (isAdminIndex >= 0) returnData.emplace_back(KeyAndValue(OperariosFields::IS_ADMIN, query.value(isAdminIndex).toString()));
         }
     } else if (aTable == TableNames::PRODUCTOS_REBOBINADO) {
         const int descripcionIndex = query.record().indexOf(ProductosRebobinadoFields::DESCRIPCION);
@@ -682,5 +686,24 @@ DataBaseUtils::getStoredDate()
         return Result<QDateTime>(Status::FAILED, "ERROR: NO DATE STORED");
     } else {
         return QDateTime::fromString(result.value().back().mValue, dateFormat);
+    }
+}
+
+Result<bool>
+DataBaseUtils::isAdmin(const QString& aDNI)
+{
+    Result<std::vector<KeyAndValue>> result = select(TableNames::OPERARIOS, OperariosFields::DNI, {KeyAndValue(OperariosFields::IS_ADMIN, "X")});
+    if (result.status() != Status::SUCCEEDED) {
+        return Result<bool>(Status::FAILED, result.error());
+    }
+    if (result.value().empty()) {
+        return Result<bool>(Status::FAILED, "ERROR: NO ADMINS!");
+    } else {
+        for (const KeyAndValue& adminDNI : result.value()) {
+            if (adminDNI.mValue == aDNI) {
+                return true;
+            }
+        }
+        return false;
     }
 }

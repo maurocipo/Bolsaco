@@ -34,3 +34,15 @@ NotificationSender::emitClearStatusBar()
 {
     emit clearStatusBar();
 }
+
+void
+NotificationSender::emitNewUserAdded(const QString& aDNI)
+{
+    emit newUserAdded(aDNI);
+}
+
+void
+NotificationSender::emitPasswordNeedsUpdate(const QString& aOldDNI, const QString& aNewDNI)
+{
+    emit passwordNeedsUpdate(aOldDNI, aNewDNI);
+}

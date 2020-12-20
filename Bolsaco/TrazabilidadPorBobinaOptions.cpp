@@ -19,6 +19,15 @@ TrazabilidadPorBobinaOptions::~TrazabilidadPorBobinaOptions()
     delete mUi;
 }
 
+void
+TrazabilidadPorBobinaOptions::clear()
+{
+    mUi->dateTimeEdit_Desde->clear();
+    mUi->dateTimeEdit_Hasta->clear();
+
+    mUi->lineEdit_IdsBobinas->clear();
+}
+
 Result<QString>
 TrazabilidadPorBobinaOptions::getHTMLTable() const
 {

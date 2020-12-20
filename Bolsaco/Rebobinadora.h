@@ -28,6 +28,8 @@ public:
     void clear();
     std::vector<ProductIdAndKilos> getKilos() const;
 
+    bool hasUnsavedWork() const;
+
 private:
     Ui::Rebobinadora *mUi;
 };

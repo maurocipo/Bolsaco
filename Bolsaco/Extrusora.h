@@ -3,9 +3,13 @@
 
 #include <QWidget>
 
+#include "Result.h"
+
 namespace Ui {
 class Extrusora;
 }
+
+class NotificationSender;
 
 struct Medida {
     Medida(const QString aAncho, const QString aMicronaje)
@@ -28,17 +32,19 @@ class Extrusora : public QWidget
     Q_OBJECT
 
 public:
-    explicit Extrusora(QWidget *parent = nullptr);
+    explicit Extrusora(NotificationSender* aNotificationSender, QWidget *parent = nullptr);
     ~Extrusora();
 
     void clear();
-    void fillMedidas(const QStringList& aMedidas);
+    void fillMedidas();
     void setBobinasIds(const QString& aCurrentGratestBobinaId);
 
     Medida getMedida() const;
-    std::vector<IdAndKilos> getBobinasData() const;
+    bool hasUnsavedWork() const;
+    Result<std::vector<IdAndKilos>> getBobinasData() const;
 
 private:
+    NotificationSender* mNotificationSender;
     Ui::Extrusora *mUi;
 };
 

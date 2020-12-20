@@ -27,6 +27,10 @@ public:
     void setCurrentUser(const unsigned int aUser) {mCurrentUser = aUser;}
     void hideMaquinas() const;
 
+    void clearOptions();
+
+    bool hasUnsavedWork() const;
+
 private slots:
     void on_comboBox_numero_currentIndexChanged(int index);
     void on_comboBox_tipoDeMaquina_currentIndexChanged(int index);
@@ -39,7 +43,6 @@ private:
     Result<void> storeTareaLavado(const QString& aIdMaquina, const QString& aIdOperario);
     Result<void> storeTareaRebobinado(const QString& aIdMaquina, const QString& aIdOperario);
 
-    QStringList buildMedidasBobinasForDisplay() const;
     QStringList buildLargosCortesForDisplay() const;
 
     // Maquinas

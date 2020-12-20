@@ -58,3 +58,18 @@ Cortadora::getData() const
 
     return returnData;
 }
+
+bool
+Cortadora::hasUnsavedWork() const
+{
+    if (mUi->spinBox_NumBobina1->value() != 0 || mUi->spinBox_CantBobina1->value() != 0 ||
+        mUi->spinBox_NumBobina2->value() != 0 || mUi->spinBox_CantBobina2->value() != 0 ||
+        mUi->spinBox_NumBobina3->value() != 0 || mUi->spinBox_CantBobina3->value() != 0 ||
+        mUi->spinBox_NumBobina4->value() != 0 || mUi->spinBox_CantBobina4->value() != 0 ||
+        mUi->spinBox_NumBobina5->value() != 0 || mUi->spinBox_CantBobina5->value() != 0) {
+
+        return true;
+    } else {
+        return false;
+    }
+}

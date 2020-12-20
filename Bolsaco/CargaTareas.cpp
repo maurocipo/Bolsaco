@@ -24,7 +24,7 @@ CargaTareas::CargaTareas(NotificationSender* aNotificationSender, QWidget *paren
     // Create Maquinas Windows
     mCortadora = new Cortadora(mUi->widget);
     mUi->widget->layout()->addWidget(mCortadora);
-    mExtrusora = new Extrusora(mUi->widget);
+    mExtrusora = new Extrusora(mNotificationSender, mUi->widget);
     mUi->widget->layout()->addWidget(mExtrusora);
     mFiltradora = new Filtradora(mUi->widget);
     mUi->widget->layout()->addWidget(mFiltradora);
@@ -47,6 +47,13 @@ CargaTareas::~CargaTareas()
 }
 
 void
+CargaTareas::clearOptions()
+{
+    mUi->comboBox_numero->setCurrentIndex(-1);
+    mUi->comboBox_tipoDeMaquina->setCurrentIndex(-1);
+}
+
+void
 CargaTareas::on_comboBox_numero_currentIndexChanged(int aMachineNumber)
 {
     if (aMachineNumber != -1) {
@@ -56,7 +63,7 @@ CargaTareas::on_comboBox_numero_currentIndexChanged(int aMachineNumber)
             mCortadora->clear();
             mCortadora->show();
         } else if (machineIndex == DataBaseData::TiposMaquinas::EXTRUSORA) {
-            mExtrusora->fillMedidas(buildMedidasBobinasForDisplay());
+            mExtrusora->fillMedidas();
             Result<QString> result = getGratestBobinaId();
             if (result.status() == Status::FAILED) {
                 mNotificationSender->emitShowError(result.error());
@@ -210,31 +217,6 @@ CargaTareas::on_pushButton_guardar_pressed()
 }
 
 QStringList
-CargaTareas::buildMedidasBobinasForDisplay() const
-{
-    QStringList returnData;
-
-    std::vector<KeyAndValue> conditions;
-    Result<std::vector<KeyAndValue>> result = select(TableNames::MEDIDAS_BOBINAS, "*", conditions);
-    if (result.status() != Status::SUCCEEDED) {
-        mNotificationSender->emitShowError(result.error());
-        return QStringList();
-    }
-    std::vector<KeyAndValue> anchos = result.value();
-
-    for (const KeyAndValue& keyAndValue : anchos) {
-        if (keyAndValue.mKey == MedidasBobinasFields::ANCHO) {
-            returnData.append(keyAndValue.mValue);
-        }
-        if (keyAndValue.mKey == MedidasBobinasFields::MICRONAJE) {
-            QString& medida = returnData.back();
-            medida.append("/" + keyAndValue.mValue);
-        }
-    }
-    return returnData;
-}
-
-QStringList
 CargaTareas::buildLargosCortesForDisplay() const
 {
     QStringList returnData;
@@ -328,12 +310,15 @@ CargaTareas::storeTareaExtrusado(const QString& aIdMaquina, const QString& aIdOp
     }
     const QString idMedida = selectResult.value().begin()->mValue;
 
-    std::vector<IdAndKilos> bobinasData = mExtrusora->getBobinasData();
-    if (bobinasData.empty()) {
+    Result<std::vector<IdAndKilos>> bobinasData = mExtrusora->getBobinasData();
+    if (bobinasData.status() != Status::SUCCEEDED) {
+        return Result<void>(Status::FAILED, bobinasData.error());
+    }
+    if (bobinasData.value().empty()) {
         return Result<void>(Status::WARNING, "Inserte al menos un resultado.");
     }
 
-    for (IdAndKilos idAndKilos : bobinasData) {
+    for (IdAndKilos idAndKilos : bobinasData.value()) {
         std::vector<KeyAndValue> newData{KeyAndValue(BobinasFields::MEDIDA, idMedida)};
         newData.push_back(KeyAndValue(BobinasFields::PESO, idAndKilos.mKilos));
         Result<void> insertResult = insert(TableNames::BOBINAS, newData);
@@ -428,4 +413,20 @@ CargaTareas::storeTareaRebobinado(const QString& aIdMaquina, const QString& aIdO
     return Status::SUCCEEDED;
 }
 
-
+bool
+CargaTareas::hasUnsavedWork() const
+{
+    if (mCortadora->isVisible()) {
+        return mCortadora->hasUnsavedWork();
+    } else if (mExtrusora->isVisible()) {
+        return mExtrusora->hasUnsavedWork();
+    } else if (mFiltradora->isVisible()) {
+        return mFiltradora->hasUnsavedWork();
+    } else if (mLavadora->isVisible()) {
+        return mLavadora->hasUnsavedWork();
+    } else if (mRebobinadora->isVisible()) {
+        return mRebobinadora->hasUnsavedWork();
+    } else {
+        return false;
+    }
+}

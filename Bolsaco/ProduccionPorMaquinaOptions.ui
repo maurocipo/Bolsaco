@@ -192,6 +192,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_Maquina</tabstop>
+  <tabstop>checkBox_FechaDesde</tabstop>
+  <tabstop>dateTimeEdit_Desde</tabstop>
+  <tabstop>checkBox_FechaHasta</tabstop>
+  <tabstop>dateTimeEdit_Hasta</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -20,6 +20,8 @@ public:
 
     Result<QString> getHTMLTable() const;
 
+    void clear();
+
 private:
     std::vector<DataBaseUtils::KeyAndValue> getBobinasConditions() const;
 

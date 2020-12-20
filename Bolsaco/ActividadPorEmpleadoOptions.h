@@ -21,6 +21,8 @@ public:
 
     Result<QString> getHTMLTable();
 
+    void clear();
+
 private slots:
     void on_tableView_clicked(const QModelIndex &index);
 

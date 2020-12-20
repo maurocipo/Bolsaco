@@ -8,6 +8,8 @@ class Admin;
 }
 
 class ActividadPorEmpleadoOptions;
+class DatosBobinasOptions;
+class DatosEmpleadosOptions;
 class QPrintPreviewDialog;
 class QPrinter;
 class QTextDocument;
@@ -37,8 +39,16 @@ private slots:
 
     void on_pushButton_ProdPorMaquina_pressed();
 
+    void on_pushButton_AgregarEmpleado_pressed();
+
+    void on_pushButton_pressed();
+
+    void on_pushButton_2_pressed();
+
 private:
     ActividadPorEmpleadoOptions* mActividadPorEmpleadoOptions;
+    DatosBobinasOptions* mDatosBobinasOptions;
+    DatosEmpleadosOptions* mDatosEmpleadosOptions;
     NotificationSender* mNotificationSender;
     ProduccionPorMaquinaOptions* mProduccionPorMaquinaOptions;
     TrazabilidadPorBobinaOptions* mTrazabilidadPorBobinaOptions;

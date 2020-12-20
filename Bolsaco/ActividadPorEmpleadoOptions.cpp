@@ -56,6 +56,23 @@ ActividadPorEmpleadoOptions::~ActividadPorEmpleadoOptions()
 }
 
 void
+ActividadPorEmpleadoOptions::clear()
+{
+    mUi->checkBox_FechaDesde->setChecked(false);
+    mUi->checkBox_FechaHasta->setChecked(false);
+    mUi->checkBox_Maquina->setChecked(false);
+    mUi->checkBox_Tarea->setChecked(false);
+
+    mUi->comboBox_Maquina->setCurrentIndex(-1);
+    mUi->comboBox_Tarea->setCurrentIndex(-1);
+
+    mUi->lineEdit_DNI->clear();
+    mUi->lineEdit_Nombre->clear();
+
+    mUi->tableView->update();
+}
+
+void
 ActividadPorEmpleadoOptions::fillComboboxMaquina()
 {
     QStringList maquinas;

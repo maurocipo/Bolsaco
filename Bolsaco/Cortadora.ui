@@ -375,6 +375,7 @@
  <tabstops>
   <tabstop>comboBox_Largo</tabstop>
   <tabstop>spinBox_NumBobina1</tabstop>
+  <tabstop>spinBox_CantBobina1</tabstop>
   <tabstop>spinBox_NumBobina2</tabstop>
   <tabstop>spinBox_CantBobina2</tabstop>
   <tabstop>spinBox_NumBobina3</tabstop>

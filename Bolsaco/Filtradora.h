@@ -19,6 +19,8 @@ public:
 
     double getKilos() const;
 
+    bool hasUnsavedWork() const;
+
 private:
     Ui::Filtradora *mUi;
 };

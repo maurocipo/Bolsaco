@@ -56,3 +56,22 @@ Lavadora::clear()
     mUi->doubleSpinBox_15->clear();
     mUi->doubleSpinBox_16->clear();
 }
+
+bool
+Lavadora::hasUnsavedWork() const
+{
+    if (mUi->doubleSpinBox_1->value() != 0 || mUi->doubleSpinBox_2->value() != 0 ||
+        mUi->doubleSpinBox_3->value() != 0 || mUi->doubleSpinBox_4->value() != 0 ||
+        mUi->doubleSpinBox_5->value() != 0 || mUi->doubleSpinBox_6->value() != 0 ||
+        mUi->doubleSpinBox_7->value() != 0 || mUi->doubleSpinBox_8->value() != 0 ||
+        mUi->doubleSpinBox_9->value() != 0 || mUi->doubleSpinBox_10->value() != 0 ||
+        mUi->doubleSpinBox_11->value() != 0 || mUi->doubleSpinBox_12->value() != 0 ||
+        mUi->doubleSpinBox_13->value() != 0 || mUi->doubleSpinBox_14->value() != 0 ||
+        mUi->doubleSpinBox_15->value() != 0 || mUi->doubleSpinBox_16->value() != 0) {
+
+        return true;
+    } else {
+        return false;
+    }
+
+}

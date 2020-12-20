@@ -14,7 +14,7 @@
 
 InicioSesion::InicioSesion(NotificationSender* aNotificationSender, QWidget* parent) :
     QWidget(parent),
-    mAccessFile(QCoreApplication::applicationDirPath() + "/Access.txt"),
+    mAccessFile(QCoreApplication::applicationDirPath() + "/data1"),
     mCurrentUser(0),
     mNotificationSender(aNotificationSender),
     mCrypt(new SimpleCrypt(Q_UINT64_C(0x0c2ad4a4acb9f023))),
@@ -34,20 +34,25 @@ InicioSesion::InicioSesion(NotificationSender* aNotificationSender, QWidget* par
         QFile file(mAccessFile);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&file);
-            // Carga de usuario y clave supremo
-            QString encripted(mCrypt->encryptToString(QString("34990189,35990189")) + "\n");
+            QString encripted;
 
             // Carga de usuarios de la Base de Datos. Ver DataBaseData::Operarios.
+            // La clave por defecto de los usuarios Admin es su DNI + 1.000.000.
             for (const DataBaseUtils::Operario& operario : DataBaseData::Operarios) {
                 const QString dni = QString::number(operario.mDNI);
-                encripted += mCrypt->encryptToString(QString(dni + "," + dni)) + "\n";
+                if (operario.mIsAdmin) {
+                    encripted += mCrypt->encryptToString(QString(dni + "," + QString::number(dni.toInt() + 1000000))) + "\n";
+                } else {
+                    encripted += mCrypt->encryptToString(QString(dni + "," + dni)) + "\n";
+                }
             }
             out << encripted;
             file.close();
         }
     }
 
-    this->setSizePolicy(parent->sizePolicy());
+    connect(mNotificationSender, SIGNAL(newUserAdded(QString)), this, SLOT(on_newUserAdded(const QString&)));
+    connect(mNotificationSender, SIGNAL(passwordNeedsUpdate(QString, QString)), this, SLOT(on_passwordNeedsUpdate(const QString&, const QString&)));
 }
 
 InicioSesion::~InicioSesion()
@@ -82,7 +87,13 @@ void InicioSesion::on_pushButton_IniciarSesion_pressed()
             QStringList splittedData = userData.split(',');
             if (splittedData[0] == DNI && splittedData[1] == password) {
                 mCurrentUser = DNI.toInt();
-                if (mCurrentUser == 34990189) {
+
+                Result<bool> result = DataBaseUtils::isAdmin(DNI);
+                if (result.status() != Status::SUCCEEDED) {
+                    mNotificationSender->emitShowError(result.error());
+                    return;
+                }
+                if (result.value()) {
                     emitAdministratorLogin();
                     mNotificationSender->emitShowWarning(mNotificationSender->WARN_ADMIN_USER_LOGGED);
                 } else {
@@ -140,4 +151,49 @@ void InicioSesion::on_lineEdit_DNI_editingFinished()
         mNotificationSender->clearStatusBar();
     }
     mUi->label_SignoUsuario->show();
+}
+
+void InicioSesion::on_newUserAdded(const QString& aDNI)
+{
+    QString encripted = mCrypt->encryptToString(QString(aDNI + "," + aDNI)) + "\n";
+    QFile file(mAccessFile);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream out(&file);
+        out << encripted;
+        file.close();
+    }
+}
+
+void
+InicioSesion::on_passwordNeedsUpdate(const QString& aOldDNI, const QString& aNewDNI)
+{
+    QFile file(mAccessFile);
+    if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream in(&file);
+        QTextStream out(&file);
+        while (!in.atEnd()) {
+            size_t pos = in.pos();
+            QString read(in.readLine());
+            QString userData = mCrypt->decryptToString(read);
+            QStringList splittedData = userData.split(',');
+            if (splittedData[0] == aOldDNI) {
+                Result<bool> result = DataBaseUtils::isAdmin(aOldDNI);
+                if (result.status() != Status::SUCCEEDED) {
+                    mNotificationSender->emitShowError(result.error());
+                    return;
+                }
+
+                QString encripted;
+                if (result.value()) {
+                    encripted += mCrypt->encryptToString(QString(aNewDNI + "," + QString::number(aNewDNI.toInt() + 1000000))) + "\n";
+                } else {
+                    encripted += mCrypt->encryptToString(QString(aNewDNI + "," + aNewDNI)) + "\n";
+                }
+                out.seek(pos);
+                out << encripted;
+                break;
+            }
+        }
+    }
+    file.close();
 }

@@ -10,6 +10,8 @@
 
 #include "ActividadPorEmpleadoOptions.h"
 #include "DataBaseUtils.h"
+#include "DatosBobinasOptions.h"
+#include "DatosEmpleadosOptions.h"
 #include "NotificationSender.h"
 #include "ProduccionPorMaquinaOptions.h"
 #include "TrazabilidadPorBobinaOptions.h"
@@ -25,6 +27,10 @@ Admin::Admin(NotificationSender* aNotificationSender, QWidget *parent) :
 
     mActividadPorEmpleadoOptions = new ActividadPorEmpleadoOptions(mNotificationSender, mUi->widgetAvailableOptions);
     mUi->widgetAvailableOptions->layout()->addWidget(mActividadPorEmpleadoOptions);
+    mDatosBobinasOptions = new DatosBobinasOptions(mNotificationSender, mUi->widgetAvailableOptions);
+    mUi->widgetAvailableOptions->layout()->addWidget(mDatosBobinasOptions);
+    mDatosEmpleadosOptions = new DatosEmpleadosOptions(mNotificationSender, mUi->widgetAvailableOptions);
+    mUi->widgetAvailableOptions->layout()->addWidget(mDatosEmpleadosOptions);
     mTrazabilidadPorBobinaOptions = new TrazabilidadPorBobinaOptions(mUi->widgetAvailableOptions);
     mUi->widgetAvailableOptions->layout()->addWidget(mTrazabilidadPorBobinaOptions);
     mProduccionPorMaquinaOptions = new ProduccionPorMaquinaOptions(mUi->widgetAvailableOptions);
@@ -57,9 +63,20 @@ Admin::~Admin()
 void
 Admin::hideOptions()
 {
+    mActividadPorEmpleadoOptions->clear();
     mActividadPorEmpleadoOptions->hide();
-    mTrazabilidadPorBobinaOptions->hide();
+
+    mDatosBobinasOptions->clear();
+    mDatosBobinasOptions->hide();
+
+    mDatosEmpleadosOptions->clear();
+    mDatosEmpleadosOptions->hide();
+
+    mProduccionPorMaquinaOptions->clear();
     mProduccionPorMaquinaOptions->hide();
+
+    mTrazabilidadPorBobinaOptions->clear();
+    mTrazabilidadPorBobinaOptions->hide();
 
     mUi->pushButton_GenerarReporte->hide();
 }
@@ -70,7 +87,6 @@ Admin::on_pushButton_ActPorEmpleado_pressed()
     hideOptions();
 
     mActividadPorEmpleadoOptions->show();
-    mActividadPorEmpleadoOptions->setEnabled(true);
     mUi->pushButton_GenerarReporte->show();
 }
 
@@ -90,6 +106,29 @@ Admin::on_pushButton_ProdPorMaquina_pressed()
 
     mProduccionPorMaquinaOptions->show();
     mUi->pushButton_GenerarReporte->show();
+}
+
+void Admin::on_pushButton_AgregarEmpleado_pressed()
+{
+    hideOptions();
+
+    mDatosEmpleadosOptions->setAgregarEmpleadoLayout();
+    mDatosEmpleadosOptions->show();
+}
+
+void Admin::on_pushButton_pressed()
+{
+    hideOptions();
+
+    mDatosEmpleadosOptions->setModificarEmpleadoLayout();
+    mDatosEmpleadosOptions->show();
+}
+
+void Admin::on_pushButton_2_pressed()
+{
+    hideOptions();
+
+    mDatosBobinasOptions->show();
 }
 
 void
@@ -122,9 +161,9 @@ Admin::on_pushButton_GenerarReporte_pressed()
 
     QString header;
     header.append("<h1 style='color: #5e9ca0; text-align: center;'>BOLSACO S.A.</h1>");
-    header.append("<p><strong>Direcci&oacute;n:</strong> Sarasa XXXX B&ordm; Sarlanga, C&oacute;rdoba Capital</p>");
-    header.append("<p style='text-align: justify;'><strong>Tel.</strong>: 0351-4123156</p>");
-    header.append("<p style='text-align: justify;'><strong>Cel.</strong>: 0351-150123456</p>");
+    header.append("<p><strong>Direcci&oacute;n:</strong> Mar&iacute;a Lastenia 550 - C&oacute;rdoba</p>");
+    header.append("<p style='text-align: justify;'><strong>Tel.</strong>: 0351-4994893</p>");
+    header.append("<p style='text-align: justify;'><strong>Mail de contacto: </strong>: bolsaco@bolsaco.com.ar</p>");
     header.append("<hr />");
     fullHtmlCode.append(header);
 
