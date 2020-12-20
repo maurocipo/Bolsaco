@@ -47,7 +47,7 @@ private:
     void hideViews();
     void setupDataBase();
     bool setUser();
-
+    QString getFullVersion();
 
     // Views
     Admin* mAdmin;

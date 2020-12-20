@@ -63,6 +63,8 @@ MainWindow::MainWindow(QWidget *aParent)
 
     setupDataBase();
 
+    setWindowTitle("BOLSACO S.A. (" + getFullVersion() + ")");
+
     mNotificationSender = new NotificationSender();
 
     mAdmin = new Admin(mNotificationSender, mUi->showWidget);
@@ -406,24 +408,6 @@ MainWindow::setupDataBase()
 
 }
 
-void
-MainWindow::on_operarioLogin()
-{
-    if (setUser()) {
-        mInicioSesion->hide();
-        mCargaTareas->show();
-    }
-}
-
-void
-MainWindow::on_administratorLogin()
-{
-    if (setUser()) {
-        mInicioSesion->hide();
-        mAdmin->show();
-    }
-}
-
 bool
 MainWindow::setUser()
 {
@@ -453,6 +437,46 @@ MainWindow::setUser()
     mUi->pushButton_CerrarSesion->show();
 
     return true;
+}
+
+QString
+MainWindow::getFullVersion()
+{
+    QString appVersionPlusDBVersion;
+
+    Result<double> res = DataBaseUtils::getCurrentVersionAPP();
+    if (res.status() != Status::SUCCEEDED) {
+        on_showError(res.error());
+        return QString();
+    }
+    appVersionPlusDBVersion.append("app:" + QString::number(res.value()) + " ");
+
+    res = DataBaseUtils::getCurrentVersionDB();
+    if (res.status() != Status::SUCCEEDED) {
+        on_showError(res.error());
+        return QString();
+    }
+    appVersionPlusDBVersion.append("DB:" + QString::number(res.value()) + " ");
+
+    return appVersionPlusDBVersion;
+}
+
+void
+MainWindow::on_operarioLogin()
+{
+    if (setUser()) {
+        mInicioSesion->hide();
+        mCargaTareas->show();
+    }
+}
+
+void
+MainWindow::on_administratorLogin()
+{
+    if (setUser()) {
+        mInicioSesion->hide();
+        mAdmin->show();
+    }
 }
 
 void
