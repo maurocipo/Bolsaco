@@ -75,7 +75,27 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     Images/Correct.png \
     Images/Incorrect.png \
-    Other/DBDiagram.drawio
+    Other/Bolsaco.ico \
+    Other/DBDiagram.drawio \
+    Other/repository/2020-12-20-1356_meta.7z \
+    Other/repository/CompletePakage/1.0.0-1content.7z \
+    Other/repository/CompletePakage/1.0.0-1content.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1iconengines.7z \
+    Other/repository/CompletePakage/1.0.0-1iconengines.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1imageformats.7z \
+    Other/repository/CompletePakage/1.0.0-1imageformats.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1meta.7z \
+    Other/repository/CompletePakage/1.0.0-1platforms.7z \
+    Other/repository/CompletePakage/1.0.0-1platforms.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1printsupport.7z \
+    Other/repository/CompletePakage/1.0.0-1printsupport.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1sqldrivers.7z \
+    Other/repository/CompletePakage/1.0.0-1sqldrivers.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1styles.7z \
+    Other/repository/CompletePakage/1.0.0-1styles.7z.sha1 \
+    Other/repository/CompletePakage/1.0.0-1translations.7z \
+    Other/repository/CompletePakage/1.0.0-1translations.7z.sha1 \
+    Other/repository/Updates.xml
 
 RESOURCES += \
     Resources.qrc

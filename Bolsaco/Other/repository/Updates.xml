@@ -1,0 +1,19 @@
+<Updates>
+ <ApplicationName>{AnyApplication}</ApplicationName>
+ <ApplicationVersion>1.0.0</ApplicationVersion>
+ <Checksum>true</Checksum>
+ <PackageUpdate>
+  <Name>CompletePakage</Name>
+  <DisplayName>CompletePakage</DisplayName>
+  <Description>Bolsaco App main package.</Description>
+  <Version>1.0.0-1</Version>
+  <ReleaseDate>2020-12-20</ReleaseDate>
+  <Default>true</Default>
+  <Script>installscript.qs</Script>
+  <UpdateFile OS="Any" CompressedSize="18137194" UncompressedSize="72727057"/>
+  <DownloadableArchives>iconengines.7z,imageformats.7z,platforms.7z,printsupport.7z,sqldrivers.7z,styles.7z,translations.7z,content.7z</DownloadableArchives>
+  <SHA1>a5c7c7a98485ba9151f3cb1749cbe56a4fe696ab</SHA1>
+ </PackageUpdate>
+ <SHA1>a5c7c7a98485ba9151f3cb1749cbe56a4fe696ab</SHA1>
+ <MetadataName>2020-12-20-1356_meta.7z</MetadataName>
+</Updates>
